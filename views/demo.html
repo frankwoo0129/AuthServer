@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>Demo</title>
+		<style>
+		.container {overflow: hidden;}
+		.right {float: left;width: 50%;}
+		.left {float: left;width: 30%;}
+		.alert {color: red}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="left">
+				<form id="addAccount">
+					Add Account:<br>
+					<input type="text" name="domain" placeholder="domain" /><br>
+					<input type="text" name="user" placeholder="id" /><span class="alert">*</span><br>
+					<input type="text" name="org" placeholder="org" /><span class="alert">*</span><br>
+					<input type="text" name="email" placeholder="email" /><br>
+					<input type="submit">
+				</form>
+				<br><br>
+				<form id="addApplication">
+					Add Application:<br>
+					<input type="text" name="app_name" placeholder="app_name" /><span class="alert">*</span><br>
+					<input type="text" name="os" placeholder="os" /><span class="alert">*</span><br>
+					<input type="text" name="app_version" placeholder="app_version" /><span class="alert">*</span><br>
+					<input type="text" name="owner" placeholder="owner" /><span class="alert">*</span><br>
+					<input type="text" name="org" placeholder="org" /><span class="alert">*</span><br>
+					<input type="submit">
+				</form>
+				<br><br>
+				<form id="addDevice">
+					Add Device:<br>
+					<input type="text" name="app_id" placeholder="app_id" /><span class="alert">*</span><br>
+					<input type="text" name="lang" placeholder="lang" /><span>(default='zh_tw')</span><br>
+					<input type="text" name="imei" placeholder="imei" /><span class="alert">*</span><br>
+					<input type="text" name="serial_id" placeholder="serial_id" /><span class="alert">*</span><br>
+					<input type="text" name="device_type" placeholder="device_type" /><span class="alert">*</span><br>
+					<input type="text" name="os" placeholder="os" /><span class="alert">*</span><br>
+					<input type="text" name="version" placeholder="version" /><span class="alert">*</span><br>
+					<input type="submit">
+				</form>
+				<br><br>
+				<form id="login">
+					Login:<br>
+					<input type="text" name="user" placeholder="user" /><span class="alert">*</span><br>
+					<input type="text" name="org" placeholder="org" /><span class="alert">*</span><br>
+					<input type="text" name="password" placeholder="password" /><span class="alert">*</span><br>
+					<input type="text" name="device_id" placeholder="device_id" /><span class="alert">*</span><br>
+					<input type="submit">
+				</form>
+				<br><br>
+				<form id="changePassword">
+					Change Password:<br>
+					<input type="text" name="client_id" placeholder="client_id" /><span class="alert">*</span><br>
+					<input type="text" name="password" placeholder="password" /><span class="alert">*</span><br>
+					<input type="text" name="newpassword" placeholder="newpassword" /><span class="alert">*</span><br>
+					<input type="submit">
+				</form>
+				<br><br>
+				<form id="resetPassword">
+					Reset Password:<br>
+					<input type="text" name="client_id" placeholder="client_id" /><span class="alert">*</span><br>
+					<input type="submit">
+				</form>
+				<br><br>
+				<form id="getToken">
+					Get Access Token:<br>
+					<input type="text" name="client_id" placeholder="client_id" /><span class="alert">*</span><br>
+					<input type="text" name="app_id" placeholder="app_id" /><span class="alert">*</span><br>
+					<input type="text" name="device_id" placeholder="device_id" /><span class="alert">*</span><br>
+					<input type="text" name="client_token" placeholder="client_token" /><span class="alert">*</span><br>
+					<input type="text" name="token_type" value="access_token" /><span class="alert">*</span><br>
+					<input type="submit">
+				</form>
+				<br><br>
+				<form id="refreshToken">
+					Refresh Token:<br>
+					<input type="text" name="refresh_token" placeholder="refresh_token" /><span class="alert">*</span><br>
+					<input type="text" name="app_id" placeholder="app_id" /><span class="alert">*</span><br>
+					<input type="text" name="client_token" placeholder="client_token" /><span class="alert">*</span><br>
+					<input type="text" name="token_type" value="refresh_token" /><span class="alert">*</span><br>
+					<input type="submit">
+				</form>
+			</div>
+			<div class="right">
+				Result:
+				<div>
+					<textarea rows="10" cols="50" id="result"></textarea>
+				</div>
+				Save:
+				<div>
+					<textarea rows="20" cols="80" id="save"></textarea>
+				</div>
+			</div>
+		</div>
+		
+		<script src="/jquery-1.11.2.js"></script>
+		<script>
+			$('#addAccount').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: "/account/add",
+					data: $('#addAccount').serialize(),
+					dataType: "json",
+					success: function (data) {
+						$('#result').html(JSON.stringify(data));
+						$('#save').append(JSON.stringify(data));
+						$('#save').append('\n');
+					},
+					error: function (data) {
+						$('#result').html(data.responseText);
+						$('#save').append(data.responseText);
+						$('#save').append('\n');
+					}
+				});
+			});
+			
+			$('#addApplication').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: "/auth/app",
+					data: $('#addApplication').serialize(),
+					dataType: "json",
+					success: function (data) {
+						$('#result').html(JSON.stringify(data));
+						$('#save').append(JSON.stringify(data));
+						$('#save').append('\n');
+					},
+					error: function (data) {
+						$('#result').html(data.responseText);
+						$('#save').append(data.responseText);
+						$('#save').append('\n');
+					}
+				});
+			});
+			
+			$('#addDevice').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: "/auth/device",
+					data: $('#addDevice').serialize(),
+					dataType: "json",
+					success: function (data) {
+						$('#result').html(JSON.stringify(data));
+						$('#save').append(JSON.stringify(data));
+						$('#save').append('\n');
+					},
+					error: function (data) {
+						$('#result').html(data.responseText);
+						$('#save').append(data.responseText);
+						$('#save').append('\n');
+					}
+				});
+			});
+			
+			$('#login').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: "/account/login",
+					data: $('#login').serialize(),
+					dataType: "json",
+					success: function (data) {
+						$('#result').html(JSON.stringify(data));
+						$('#save').append(JSON.stringify(data));
+						$('#save').append('\n');
+					},
+					error: function (data) {
+						$('#result').html(data.responseText);
+						$('#save').append(data.responseText);
+						$('#save').append('\n');
+					}
+				});
+			});
+			
+			$('#changePassword').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: "/account/changepassword",
+					data: $('#changePassword').serialize(),
+					dataType: "json",
+					success: function (data) {
+						$('#result').html(JSON.stringify(data));
+						$('#save').append(JSON.stringify(data));
+						$('#save').append('\n');
+					},
+					error: function (data) {
+						$('#result').html(data.responseText);
+						$('#save').append(data.responseText);
+						$('#save').append('\n');
+					}
+				});
+			});
+			
+			$('#resetPassword').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: "/account/resetpassword",
+					data: $('#resetPassword').serialize(),
+					dataType: "json",
+					success: function (data) {
+						$('#result').html(JSON.stringify(data));
+						$('#save').append(JSON.stringify(data));
+						$('#save').append('\n');
+					},
+					error: function (data) {
+						$('#result').html(data.responseText);
+						$('#save').append(data.responseText);
+						$('#save').append('\n');
+					}
+				});
+			});
+			
+			$('#getToken').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: "/auth/token",
+					data: $('#getToken').serialize(),
+					dataType: "json",
+					success: function (data) {
+						$('#result').html(JSON.stringify(data));
+						$('#save').append(JSON.stringify(data));
+						$('#save').append('\n');
+					},
+					error: function (data) {
+						$('#result').html(data.responseText);
+						$('#save').append(data.responseText);
+						$('#save').append('\n');
+					}
+				});
+			});
+			
+			$('#refreshToken').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: "/auth/token",
+					data: $('#refreshToken').serialize(),
+					dataType: "json",
+					success: function (data) {
+						$('#result').html(JSON.stringify(data));
+						$('#save').append(JSON.stringify(data));
+						$('#save').append('\n');
+					},
+					error: function (data) {
+						$('#result').html(data.responseText);
+						$('#save').append(data.responseText);
+						$('#save').append('\n');
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
