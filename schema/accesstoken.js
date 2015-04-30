@@ -3,20 +3,19 @@
 'use strict';
 
 var mongoose = require('mongoose');
-var Client = require('./client');
-var App = require('./app');
-var randomString = require('../lib/util').randomString("abcdefghijklmnopqrstuwxyz0123456789", 32);
+var User = require('./user').User;
+var Client = require('./client').Client;
 
 var AccessTokenSchema = new mongoose.Schema({
 	id: {
 		type: String,
-		default: randomString
+		required: true
 	},
-	app_id: {
+	userId: {
 		type: String,
 		required: true
 	},
-	client_id: {
+	clientId: {
 		type: String,
 		required: true
 	},
@@ -29,7 +28,7 @@ var AccessTokenSchema = new mongoose.Schema({
 
 var AccessToken = mongoose.model('AccessToken', AccessTokenSchema);
 
-AccessTokenSchema.path('client_id').validate(function (value, response) {
+AccessTokenSchema.path('clientId').validate(function (value, response) {
 	Client.findOne({
 		id: value,
 		expired: false
@@ -42,10 +41,10 @@ AccessTokenSchema.path('client_id').validate(function (value, response) {
 			response(true);
 		}
 	});
-}, 'Validation of {client_id} failed');
+}, 'Validation of {clientId} failed');
 
-AccessTokenSchema.path('app_id').validate(function (value, response) {
-	App.findOne({
+AccessTokenSchema.path('userId').validate(function (value, response) {
+	User.findOne({
 		id: value,
 		expired: false
 	}, function (err, result) {
@@ -57,6 +56,6 @@ AccessTokenSchema.path('app_id').validate(function (value, response) {
 			response(true);
 		}
 	});
-}, 'Validation of {app_id} failed');
+}, 'Validation of {userId} failed');
 
 module.exports = AccessToken;

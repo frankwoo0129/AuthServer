@@ -3,7 +3,9 @@
 'use strict';
 
 var mongoose = require('mongoose');
-var App = require('./app');
+var md5 = require('../lib/md5');
+var Client = require('./client').Client;
+//var ValidationError = require('mongoose').Error.ValidationError;
 
 /*
  *	Main Key:
@@ -13,7 +15,7 @@ var App = require('./app');
  *		os
  */
 var DeviceSchema = new mongoose.Schema({
-	app_id: {
+	clientId: {
 		type: String,
 		required: true
 	},
@@ -29,11 +31,11 @@ var DeviceSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	serial_id: {
+	serialId: {
 		type: String,
 		required: true
 	},
-	device_type: {
+	deviceType: {
 		type: String,
 		required: true
 	},
@@ -60,10 +62,10 @@ var Device = mongoose.model('Device', DeviceSchema);
 DeviceSchema.pre('save', function (next) {
 	var self = this;
 	Device.remove({
-		app_id: self.app_id,
+		clientId: self.clientId,
 		imei: self.imei,
-		serial_id: self.serial_id,
-		device_type: self.device_type,
+		serialId: self.serialId,
+		deviceType: self.deviceType,
 		os: self.os,
 		version: self.version
 	}, function (err, result) {
@@ -90,8 +92,8 @@ DeviceSchema.path('id').validate(function (value, response) {
 	});
 }, 'Validation of {id} failed');
 
-DeviceSchema.path('app_id').validate(function (value, response) {
-	App.findOne({
+DeviceSchema.path('clientId').validate(function (value, response) {
+	Client.findOne({
 		id: value,
 		expired: false
 	}, function (err, result) {
@@ -103,6 +105,144 @@ DeviceSchema.path('app_id').validate(function (value, response) {
 			response(true);
 		}
 	});
-}, 'Validation of {app_id} failed');
+}, 'Validation of {clientId} failed');
 
-module.exports = Device;
+var getDevice = function (deviceId, callback) {
+	var query = {
+		id: deviceId
+	};
+	Device.findOne(query, function (err, result) {
+		if (err) {
+			callback(err);
+		} else if (!result) {
+			callback({
+				debug: 'result is Not found when getDevice, query=' + JSON.stringify(query),
+				message: 'No this device',
+				status: 404
+			});
+		} else {
+			callback(null, {
+				id: result.id,
+				lang: result.lang,
+				imei: result.imei,
+				serialId: result.serialId,
+				deviceType: result.deviceType,
+				os: result.os,
+				version: result.version
+			});
+		}
+	});
+};
+
+var addDevice = function (config, clientId, callback) {
+//	if (!req.body.imei) {
+//		next({
+//			message: 'No \'imei\'',
+//			status: 400
+//		});
+//	} else if (!req.body.lang) {
+//		/*lang default value = 'zh_tw'*/
+//		req.body.lang = 'zh_tw';
+//	} else if (!req.body.serial_id) {
+//		next({
+//			message: 'No \'serial_id\'',
+//			status: 400
+//		});
+//	} else if (!req.body.device_type) {
+//		next({
+//			message: 'No \'device_type\'',
+//			status: 400
+//		});
+//	} else if (!req.body.os) {
+//		next({
+//			message: 'No \'os\'',
+//			status: 400
+//		});
+//	} else if (!req.body.version) {
+//		next({
+//			message: 'No \'version\'',
+//			status: 400
+//		});
+//	} else if (!req.body.app_id) {
+//		next({
+//			message: 'No \'app_id\'',
+//			status: 400
+//		});
+//	} else {
+	var newDevice = new Device();
+	newDevice.lang = config.lang;
+	newDevice.imei = config.imei;
+	newDevice.serialId = config.serialId;
+	newDevice.deviceType = config.deviceType;
+	newDevice.os = config.os;
+	newDevice.version = config.version;
+	newDevice.id = md5.md5sum(JSON.stringify(newDevice));
+	newDevice.clientId = clientId;
+		
+	newDevice.save(function (err) {
+		if (err) {
+//				// TODO
+//				if (err instanceof ValidationError) {
+//					console.log(err);
+//					var message = [];
+//					if (err.errors) {
+//						Object.keys(err.errors).forEach(function (key) {
+//							message.push(String(err.errors[key]));
+//						});
+//						res.status(400).json({
+//							message: message
+//						});
+//					} else {
+//						res.status(400).json({
+//							message: err.message
+//						});
+//					}
+//				} else {
+//					next(err);
+//				}
+			callback(err);
+		} else {
+			callback(null, {
+				id: newDevice.id,
+				lang: newDevice.lang,
+				imei: newDevice.imei,
+				serialId: newDevice.serialId,
+				deviceType: newDevice.deviceType,
+				os: newDevice.os,
+				version: newDevice.version
+			});
+		}
+	});
+};
+
+var deleteDevice = function (deviceId, callback) {
+	var query = {
+		id: deviceId
+	};
+	Device.findOneAndRemove(query, function (err, result) {
+		if (err) {
+			callback(err);
+		} else if (!result) {
+			callback({
+				debug: 'result is Not found when deleteDevice, query=' + JSON.stringify(query),
+				message: 'No this app',
+				status: 404
+			});
+		} else {
+			callback(null, {
+				id: result.id,
+				lang: result.lang,
+				imei: result.imei,
+				serialId: result.serialId,
+				deviceType: result.deviceType,
+				os: result.os,
+				version: result.version
+			});
+		}
+	});
+};
+
+module.exports.Device = Device;
+module.exports.getDevice = getDevice;
+module.exports.addDevice = addDevice;
+module.exports.deleteDevice = deleteDevice;

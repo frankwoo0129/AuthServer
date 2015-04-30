@@ -21,6 +21,7 @@ root.get('/account', account.getClientId);
 root.get('/account/:id', account.getClient);
 root.post('/account', account.addClient);
 root.delete('/account', account.deleteClient);
+
 root.post('/account/login', account.getClientToken);
 root.post('/account/changepassword', account.changePassword);
 root.post('/account/resetpassword', account.resetPassword);

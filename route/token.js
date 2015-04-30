@@ -5,52 +5,48 @@
 
 var moment = require('moment');
 var decryptClientToken = require('./account').decrypt;
+var Device = require('../schema').Device;
+var User = require('../schema').User;
 var ClientToken = require('../schema').ClientToken;
 var AccessToken = require('../schema').AccessToken;
 var RefreshToken = require('../schema').RefreshToken;
+var oauth2 = require('../lib/oauth2');
 
-var getClient = function (req, res, next) {
-	if (!req.query.token) {
+var checkClient =  function (req, res, next) {
+	if (!req.headers.authorization) {
 		next({
-			message: 'No token',
-			status: 400
-		});
-	} else if (!req.query.app_id) {
-		next({
-			message: 'No app_id',
-			status: 400
+			message: 'unauthorized_client',
+			status: 401
 		});
 	} else {
-		var query = {
-			id: req.query.token,
-			app_id: req.query.app_id
-		};
-		AccessToken.findOne(query, function (err, result) {
-			if (err) {
-				next(err);
-			} else if (!result) {
+		var authorization = req.headers.authorization.split(' '),
+			type = authorization[0],
+			value = authorization[1],
+			newValue;
+		if (type.toLowerCase() === 'basic') {
+			try {
+				newValue = JSON.parse(value);
+				oauth2.getClient(newValue.clientId, newValue.clientSecret, function (err) {
+					if (err) {
+						next(err);
+					} else {
+						next();
+					}
+				});
+			} catch (err) {
 				next({
-					debug: 'result is Not found when getClient(AccessToken), query=' + JSON.stringify(query),
-					message: 'Invalid token',
+					debug: err.stack,
+					message: 'unauthorized_client',
 					status: 401
 				});
-			} else {
-				res.status(200).json({
-					client_id: result.client_id
-				});
 			}
-		});
-	}
-};
-
-var check_app_id =  function (req, res, next) {
-	if (!req.body.app_id) {
-		next({
-			message: 'No \'app_id\'',
-			status: 400
-		});
-	} else {
-		next();
+		} else {
+			next({
+				debug: 'authorization type is ' + type,
+				message: 'unauthorized_client',
+				status: 401
+			});
+		}
 	}
 };
 
@@ -212,6 +208,3 @@ var check_token_type = function (req, res, next) {
 		});
 	}
 };
-
-module.exports.getClient = getClient;
-module.exports.getAccessToken = [check_app_id, check_client_token, check_token_type];

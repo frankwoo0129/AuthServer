@@ -9,10 +9,10 @@ mongoose.connection.on('error', function (err) {
 	process.exit();
 });
 
-module.exports.App = require('./app');
-module.exports.Device = require('./device');
-module.exports.Client = require('./client');
-module.exports.ClientToken = require('./clienttoken');
+module.exports.Client = require('./client').Cient;
+module.exports.Device = require('./device').Device;
+module.exports.User = require('./user').User;
+module.exports.GrantToken = require('./granttoken');
 module.exports.AccessToken = require('./accesstoken');
 module.exports.RefreshToken = require('./refreshtoken');
 
