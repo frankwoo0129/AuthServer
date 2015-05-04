@@ -4,184 +4,172 @@
 "use strict";
 
 var moment = require('moment');
-var decryptClientToken = require('./account').decrypt;
 var Device = require('../schema').Device;
 var User = require('../schema').User;
+var getGrantToken = require('./authorization').getGrantToken;
 var ClientToken = require('../schema').ClientToken;
 var AccessToken = require('../schema').AccessToken;
 var RefreshToken = require('../schema').RefreshToken;
 var oauth2 = require('../lib/oauth2');
 
+var checkAccessToken = function (req, res, next) {
+	
+};
+
 var checkClient =  function (req, res, next) {
 	if (!req.headers.authorization) {
 		next({
-			message: 'unauthorized_client',
-			status: 401
+			debug: 'no authorization header',
+			message: 'invalid_request',
+			status: 400
 		});
 	} else {
-		var authorization = req.headers.authorization.split(' '),
-			type = authorization[0],
-			value = authorization[1],
+		var authorization = req.headers.authorization.match(/Basic\s(\S+)/),
 			newValue;
-		if (type.toLowerCase() === 'basic') {
+		if (authorization) {
 			try {
-				newValue = JSON.parse(value);
+				newValue = JSON.parse(authorization[1]);
 				oauth2.getClient(newValue.clientId, newValue.clientSecret, function (err) {
 					if (err) {
 						next(err);
 					} else {
+						req.oauth = {
+							clientId: newValue.clientId,
+							clientSecret: newValue.clientSecret
+						};
 						next();
 					}
 				});
 			} catch (err) {
 				next({
 					debug: err.stack,
-					message: 'unauthorized_client',
+					message: 'invalid_client',
 					status: 401
 				});
 			}
 		} else {
 			next({
-				debug: 'authorization type is ' + type,
-				message: 'unauthorized_client',
+				debug: 'authorization header error',
+				message: 'invalid_client',
 				status: 401
 			});
 		}
 	}
 };
 
-var check_client_token = function (req, res, next) {
-	if (!req.body.client_token) {
+var checkGrantType = function (req, res, next) {
+	if (!req.body.grant_type) {
 		next({
-			message: 'No \'client_token\'',
+			debug: 'no grant_type',
+			message: 'invalid_request',
 			status: 400
 		});
 	} else {
-		try {
-			var client = decryptClientToken(req.body.client_token);
-			if (!client.id || !client.createdAt || !client.client_id) {
+		oauth2.grantTypeAllowed(req.oauth.clientId, req.body.grant_type, function (err, allow) {
+			if (err) {
+				next(err);
+			} else if (!allow) {
 				next({
-					debug: 'client_token decrypt ERROR',
-					message: 'Invalid client_token',
-					status: 401
+					debug: 'grant_type is ' + req.body.grant_type,
+					message: 'unsupported_grant_type',
+					status: 400
 				});
 			} else {
-				req.body.client_token = client;
+				req.oauth.grant_type = req.body.grant_type;
 				next();
 			}
-		} catch (err) {
-			next({
-				debug: err.stack,
-				message: 'Invalid client_token',
-				status: 401
-			});
-		}
+		});
 	}
 };
 
-var check_access_token = function (req, res, next) {
-	if (!req.body.client_id) {
+// Grant Type
+var usePassword = function (req, res, next) {
+	if (!req.body.user) {
 		next({
-			message: 'No \'client_id\'',
+			debug: 'no user',
+			message: 'invalid_request',
 			status: 400
 		});
-	} else if (!req.body.device_id) {
+	} else if (!req.body.password) {
 		next({
-			message: 'No \'device_id\'',
+			debug: 'no password',
+			message: 'invalid_request',
 			status: 400
 		});
 	} else {
-		var query = {
-			id: req.body.client_token.id,
-			client_id: req.body.client_id,
-			device_id: req.body.device_id
-		};
-		ClientToken.findOne(query, function (err, result) {
+		oauth2.getUser(req.body.user, req.body.password, function (err) {
 			if (err) {
 				next(err);
-			} else if (!result) {
-				next({
-					debug: 'result is Not found when check_access_token(ClientToken), query=' + JSON.stringify(query),
-					message: 'Invalid clinet_token',
-					status: 401
-				});
 			} else {
-				var accessToken = new AccessToken(),
-					refreshToken = new RefreshToken(),
-					access,
-					refresh;
-				accessToken.app_id = req.body.app_id;
-				accessToken.client_id = req.body.client_id;
-				accessToken.save(function (err) {
-					if (err) {
-						next(err);
-					} else {
-						refreshToken.app_id = req.body.app_id;
-						refreshToken.client_id = req.body.client_id;
-						refreshToken.save(function (err) {
-							if (err) {
-								next(err);
-							} else {
-								res.status(200).json({
-									access_token: accessToken.id,
-									refresh_token: refreshToken.id
-								});
-							}
-						});
-					}
-				});
+				req.oauth.userId = req.body.user;
+				next();
 			}
 		});
 	}
 };
 
-var check_refresh_token = function (req, res, next) {
+var checkGrantToken = function (req, res, next) {
+	if (!req.body.grant_token) {
+		next({
+			debug: 'no grant_token',
+			message: 'invalid_request',
+			status: 400
+		});
+	} else {
+		oauth2.getGrantToken(req.body.grant_token, function (err, result) {
+			if (err) {
+				next(err);
+			} else {
+				if (result.clientId !== req.oauth.clientId && result.clientSecret !== req.oauth.clientSecret) {
+					next({
+						message: 'invalid_grant',
+						status: 401
+					});
+				} else {
+					req.oauth.userId = result.userId;
+					next();
+				}
+			}
+		});
+	}
+};
+
+var useAuthorizationCode = function (req, res, next) {
+
+};
+
+var useClientCredentials = function (req, res, next) {
+
+};
+
+var useRefreshToken = function (req, res, next) {
 	if (!req.body.refresh_token) {
 		next({
-			message: 'No \'refresh_token\'',
+			debug: 'no refesh_token',
+			message: 'invalid_request',
 			status: 400
 		});
 	} else {
-		var query_ClientToken = {
-			id: req.body.client_token.id,
-			client_id: req.body.client_token.client_id
-		};
-		ClientToken.findOne(query_ClientToken, function (err, result_client_token) {
+		oauth2.getRefreshToken(req.body.refresh_token, function (err, result) {
 			if (err) {
 				next(err);
-			} else if (!result_client_token) {
+			} else if (result.clientId !== req.oauth.clientId || result.clientSecret !== req.oauth.clientSecret) {
 				next({
-					debug: 'result is Not found when check_refresh_token(ClientToken), query=' + JSON.stringify(query_ClientToken),
-					message: 'Invalid client_token',
+					debug: 'refresh_token and client is NOT paired',
+					message: 'invalid_grant',
 					status: 401
 				});
 			} else {
-				var query = {
-					id: req.body.refresh_token,
-					app_id: req.body.app_id,
-					client_id: result_client_token.client_id
-				};
-				RefreshToken.findOne(query, function (err, result) {
+				var accessToken,
+					expires;
+				oauth2.saveAccessToken(accessToken, result.clientId, result.clientSecret, expires, result.userId, function (err) {
 					if (err) {
 						next(err);
-					} else if (!result) {
-						next({
-							debug: 'result is Not found when check_refresh_token(RefreshToken), query=' + JSON.stringify(query),
-							message: 'Invalid refresh_token',
-							status: 401
-						});
 					} else {
-						var accessToken = new AccessToken();
-						accessToken.client_id = result_client_token.client_id;
-						accessToken.app_id = req.body.app_id;
-						accessToken.save(function (err) {
-							if (err) {
-								next(err);
-							} else {
-								res.status(200).json({
-									access_token: accessToken.id
-								});
-							}
+						res.status(200).json({
+							access_token: accessToken,
+							token_type: 'Bearer',
+							expires_in: expires
 						});
 					}
 				});
@@ -190,21 +178,6 @@ var check_refresh_token = function (req, res, next) {
 	}
 };
 
-var check_token_type = function (req, res, next) {
-	if (!req.body.token_type) {
-		next({
-			message: 'No \'token_type\'',
-			status: 400
-		});
-	} else if (req.body.token_type === 'refresh_token') {
-		check_refresh_token(req, res, next);
-	} else if (req.body.token_type === 'access_token') {
-		check_access_token(req, res, next);
-	} else {
-		next({
-			debug: 'token_type=' + req.body.token_type,
-			message: 'No this token_type',
-			status: 400
-		});
-	}
-};
+
+
+

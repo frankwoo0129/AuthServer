@@ -96,5 +96,9 @@ var getGrantToken = function (req, res, next) {
 
 };
 
-module.exports.decrypt = decrypt;
+var saveGrantToken = function (req, res, next) {
+	
+};
+
+module.exports.saveGrantToken = saveGrantToken;
 module.exports.getGrantToken = getGrantToken;
