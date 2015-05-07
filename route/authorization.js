@@ -5,6 +5,7 @@
 var User = require('../schema').User;
 var GrantToken = require('../schema').GrantToken;
 var rsa = require('../lib/rsa');
+var oauth2 = require('../lib/oauth2');
 
 var encrypt = function (plain) {
 	return rsa.encrypt(JSON.stringify(plain)).replace(/\+/g, '-').replace(/\//g, '_');
@@ -96,9 +97,69 @@ var getGrantToken = function (req, res, next) {
 
 };
 
-var saveGrantToken = function (req, res, next) {
+var useGrantToken = function (req, res, next) {
 	
 };
 
-module.exports.saveGrantToken = saveGrantToken;
-module.exports.getGrantToken = getGrantToken;
+// Grant Type
+var usePassword = function (req, res, next) {
+	if (!req.body.user) {
+		next({
+			debug: 'no user',
+			message: 'invalid_request',
+			status: 400
+		});
+	} else if (!req.body.password) {
+		next({
+			debug: 'no password',
+			message: 'invalid_request',
+			status: 400
+		});
+	} else {
+		oauth2.getUser(req.body.user, req.body.password, function (err) {
+			if (err) {
+				next(err);
+			} else {
+				var accessToken,
+					expires = 3600;
+				oauth2.saveAccessToken(accessToken, req.oauth.clientId, req.oauth.clientSecret, expires, req.body.user, function (err) {
+					if (err) {
+						next(err);
+					} else {
+						res.status(200).json({
+							access_token: accessToken,
+							token_type: 'Bearer',
+							expires_in: expires
+						});
+					}
+				});
+			}
+		});
+	}
+};
+
+var checkResponseType = function (req, res, next) {
+	if (!req.body.response_type) {
+		next({
+			debug: 'no response_type',
+			message: 'invalid_request',
+			status: 400
+		});
+	} else if (req.body.response_type === 'grant_token') {
+		useGrantToken(req, res, next);
+	} else if (req.body.response_type === 'token') {
+		usePassword(req, res, next);
+	} else if (req.body.response_type === 'code') {
+		next({
+			debug: 'authorization_code is NOT supported',
+			message: 'authorization_code is NOT supported',
+			status: 400
+		});
+	} else {
+		next({
+			debug: 'unsupported_response_type',
+			message: 'unsupported_response_type',
+			status: 400
+		});
+	}
+};
