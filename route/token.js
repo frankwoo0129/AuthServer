@@ -5,13 +5,52 @@
 
 var moment = require('moment');
 var root = require('express').Router();
-var Device = require('../schema').Device;
-var User = require('../schema').User;
-var getGrantToken = require('./authorization').getGrantToken;
-var ClientToken = require('../schema').ClientToken;
-var AccessToken = require('../schema').AccessToken;
-var RefreshToken = require('../schema').RefreshToken;
 var oauth2 = require('../lib/oauth2');
+
+var parseAuthorization =  function (authorization, callback) {
+	if (!authorization) {
+		callback({
+			debug: 'no authorization header',
+			message: 'invalid_request',
+			status: 400
+		});
+	} else {
+		var newValue = authorization.match(/Basic\s(\S+)/),
+			auth;
+		if (newValue) {
+			try {
+				auth = JSON.parse(new Buffer(newValue[1], 'base64'));
+				if (!auth.clientId || !auth.clientSecret) {
+					callback({
+						debug: 'authotizarion header error',
+						message: 'invalid_client',
+						status: 401
+					});
+				} else {
+					oauth2.getClient(auth.clientId, auth.clientSecret, function (err) {
+						if (err) {
+							callback(err);
+						} else {
+							callback(null, auth);
+						}
+					});
+				}
+			} catch (err) {
+				callback({
+					debug: err.message,
+					message: 'invalid_client',
+					status: 401
+				});
+			}
+		} else {
+			callback({
+				debug: 'authorization header error',
+				message: 'invalid_client',
+				status: 401
+			});
+		}
+	}
+};
 
 var checkAccessToken = function (req, res, next) {
 	if (!req.headers.authorization) {
@@ -49,47 +88,6 @@ var checkAccessToken = function (req, res, next) {
 	}
 };
 
-var checkClient =  function (req, res, next) {
-	if (!req.headers.authorization) {
-		next({
-			debug: 'no authorization header',
-			message: 'invalid_request',
-			status: 400
-		});
-	} else {
-		var authorization = req.headers.authorization.match(/Basic\s(\S+)/),
-			newValue;
-		if (authorization) {
-			try {
-				newValue = JSON.parse(authorization[1]);
-				oauth2.getClient(newValue.clientId, newValue.clientSecret, function (err) {
-					if (err) {
-						next(err);
-					} else {
-						req.oauth = {
-							clientId: newValue.clientId,
-							clientSecret: newValue.clientSecret
-						};
-						next();
-					}
-				});
-			} catch (err) {
-				next({
-					debug: err.message,
-					message: 'invalid_client',
-					status: 401
-				});
-			}
-		} else {
-			next({
-				debug: 'authorization header error',
-				message: 'invalid_client',
-				status: 401
-			});
-		}
-	}
-};
-
 var checkGrantType = function (req, res, next) {
 	if (!req.body.grant_type) {
 		next({
@@ -115,10 +113,16 @@ var checkGrantType = function (req, res, next) {
 	}
 };
 
-var checkGrantToken = function (req, res, next) {
+var useGrantToken = function (req, res, next) {
 	if (!req.body.grant_token) {
 		next({
 			debug: 'no grant_token',
+			message: 'invalid_request',
+			status: 400
+		});
+	} else if (!req.body.userId) {
+		next({
+			debug: 'no userId',
 			message: 'invalid_request',
 			status: 400
 		});
@@ -127,54 +131,46 @@ var checkGrantToken = function (req, res, next) {
 			if (err) {
 				next(err);
 			} else {
-				if (result.clientId !== req.oauth.clientId && result.clientSecret !== req.oauth.clientSecret) {
+				if (result.clientId !== req.oauth.clientId) {
 					next({
-						debug: 'grant_token and client is NOT paired',
+						debug: 'clientId is NOT paired',
+						message: 'invalid_grant',
+						status: 401
+					});
+				} else if (result.clientSecret !== req.oauth.clientSecret) {
+					next({
+						debug: 'clientSecret is NOT paired',
+						message: 'invalid_grant',
+						status: 401
+					});
+				} else if (result.userId !== req.body.userId) {
+					next({
+						debug: 'userId is NOT paired',
 						message: 'invalid_grant',
 						status: 401
 					});
 				} else {
-					req.oauth.userId = result.userId;
-					next();
+					var expires = 3600,
+						ret = {};
+					oauth2.saveAccessToken(req.oauth.clientId, req.oauth.clientSecret, expires, req.body.userId, function (err, accessToken) {
+						if (err) {
+							next(err);
+						} else {
+							ret.access_token = accessToken;
+							ret.token_type = 'Bearer';
+							ret.expires_in = expires;
+							oauth2.saveRefreshToken(req.oauth.clientId, req.oauth.clientSecret, 86400, req.oauth.userId, function (err, refreshToken) {
+								if (err) {
+									ret.debug = 'saveRefreshToken error, ' + err.message;
+									res.status(200).json(ret);
+								} else {
+									ret.refresh_token = refreshToken;
+									res.status(200).json(ret);
+								}
+							});
+						}
+					});
 				}
-			}
-		});
-	}
-};
-
-var useGrantToken = function (req, res, next) {
-	if (!req.body.userId) {
-		next({
-			debug: 'no userId',
-			message: 'invalid_request',
-			status: 400
-		});
-	} else if (req.body.userId !== req.oauth.userId) {
-		next({
-			debug: 'grant_token and user is NOT paired',
-			message: 'invalid_grant',
-			status: 401
-		});
-	} else {
-		var accessToken,
-			refreshToken,
-			expires = 3600;
-		oauth2.saveAccessToken(accessToken, req.oauth.clientId, req.oauth.clientSecret, expires, req.oauth.userId, function (err) {
-			if (err) {
-				next(err);
-			} else {
-				oauth2.saveRefreshToken(refreshToken, req.oauth.clientId, req.oauth.clientSecret, 86400, req.oauth.userId, function (err) {
-					if (err) {
-						next(err);
-					} else {
-						res.status(200).json({
-							refresh_token: refreshToken,
-							access_token: accessToken,
-							token_type: 'Bearer',
-							expires_in: expires
-						});
-					}
-				});
 			}
 		});
 	}
@@ -219,12 +215,6 @@ var useRefreshToken = function (req, res, next) {
 					message: 'invalid_grant',
 					status: 401
 				});
-			} else if (result.userId !== req.oauth.userId) {
-				next({
-					debug: 'refresh_token and userId is NOT paired',
-					message: 'invalid_grant',
-					status: 401
-				});
 			} else if (result.expires <= 0) {
 				next({
 					debug: 'refresh_token expired',
@@ -232,9 +222,8 @@ var useRefreshToken = function (req, res, next) {
 					status: 401
 				});
 			} else {
-				var accessToken,
-					expires = 3600;
-				oauth2.saveAccessToken(accessToken, req.oauth.clientId, req.oauth.clientSecret, expires, req.oauth.userId, function (err) {
+				var expires = 3600;
+				oauth2.saveAccessToken(result.clientId, result.clientSecret, expires, result.userId, function (err, accessToken) {
 					if (err) {
 						next(err);
 					} else {
@@ -250,9 +239,9 @@ var useRefreshToken = function (req, res, next) {
 	}
 };
 
-root.get('/', checkAccessToken);
+module.exports.getToken = checkAccessToken;
 
-root.post('/', [checkClient, checkGrantType, checkGrantToken, function (req, res, next) {
+module.exports.postToGetToken = [checkGrantType, function (req, res, next) {
 	if (req.oauth.grant_type === 'grant_token') {
 		useGrantToken(req, res, next);
 	} else if (req.oauth.grant_type === 'refresh_token') {
@@ -268,4 +257,4 @@ root.post('/', [checkClient, checkGrantType, checkGrantToken, function (req, res
 			status: 400
 		});
 	}
-}]);
+}];
