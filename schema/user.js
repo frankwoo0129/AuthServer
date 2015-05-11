@@ -130,13 +130,13 @@ var addUser = function (user, org, config, callback) {
 	newUser.user = user;
 	newUser.org = org;
 	newUser.id = md5.md5sum(JSON.stringify(newUser));
-	if (config.email) {
+	if (config && config.email) {
 		newUser.email = config.email;
 	}
-	if (config.mobile_phone) {
+	if (config && config.mobile_phone) {
 		newUser.modile_phone = config.mobile_phone;
 	}
-	if (config.work_phone) {
+	if (config && config.work_phone) {
 		newUser.work_phone = config.work_phone;
 	}
 	newUser.password = randomPassword(6);

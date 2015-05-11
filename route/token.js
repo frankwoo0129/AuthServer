@@ -7,51 +7,6 @@ var moment = require('moment');
 var root = require('express').Router();
 var oauth2 = require('../lib/oauth2');
 
-var parseAuthorization =  function (authorization, callback) {
-	if (!authorization) {
-		callback({
-			debug: 'no authorization header',
-			message: 'invalid_request',
-			status: 400
-		});
-	} else {
-		var newValue = authorization.match(/Basic\s(\S+)/),
-			auth;
-		if (newValue) {
-			try {
-				auth = JSON.parse(new Buffer(newValue[1], 'base64'));
-				if (!auth.clientId || !auth.clientSecret) {
-					callback({
-						debug: 'authotizarion header error',
-						message: 'invalid_client',
-						status: 401
-					});
-				} else {
-					oauth2.getClient(auth.clientId, auth.clientSecret, function (err) {
-						if (err) {
-							callback(err);
-						} else {
-							callback(null, auth);
-						}
-					});
-				}
-			} catch (err) {
-				callback({
-					debug: err.message,
-					message: 'invalid_client',
-					status: 401
-				});
-			}
-		} else {
-			callback({
-				debug: 'authorization header error',
-				message: 'invalid_client',
-				status: 401
-			});
-		}
-	}
-};
-
 var checkAccessToken = function (req, res, next) {
 	if (!req.headers.authorization) {
 		next({

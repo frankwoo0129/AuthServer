@@ -22,19 +22,19 @@ var checkPassword = function (user, password, callback) {
 			if (err) {
 				callback(err);
 			} else {
-				callback(null, result.id);
+				callback();
 			}
 		});
 	}
 };
 
 var useGrantToken = function (req, res, next) {
-	checkPassword(req.body.user, req.body.password, function (err, userId) {
+	checkPassword(req.body.user, req.body.password, function (err) {
 		if (err) {
 			next(err);
 		} else {
 			var expires = 86400;
-			oauth2.saveGrantToken(req.oauth.clientId, req.oauth.clientSecret, expires, userId, function (err, grantToken) {
+			oauth2.saveGrantToken(req.oauth.clientId, req.oauth.clientSecret, expires, req.body.user, function (err, grantToken) {
 				if (err) {
 					next(err);
 				} else {
@@ -49,13 +49,12 @@ var useGrantToken = function (req, res, next) {
 };
 
 var usePassword = function (req, res, next) {
-	checkPassword(req.body.user, req.body.password, function (err, userId) {
+	checkPassword(req.body.user, req.body.password, function (err) {
 		if (err) {
 			next(err);
 		} else {
-			var accessToken,
-				expires = 3600;
-			oauth2.saveAccessToken(accessToken, req.oauth.clientId, req.oauth.clientSecret, expires, userId, function (err) {
+			var expires = 3600;
+			oauth2.saveAccessToken(req.oauth.clientId, req.oauth.clientSecret, expires, req.body.user, function (err, accessToken) {
 				if (err) {
 					next(err);
 				} else {
@@ -96,4 +95,4 @@ var checkResponseType = function (req, res, next) {
 	}
 };
 
-module.exports.auth = checkResponseType;
+module.exports = checkResponseType;

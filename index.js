@@ -50,25 +50,6 @@ app.get('/api', function (req, res) {
 	});
 });
 
-//var test1 = function (req, res, next) {
-//	console.log('test1');
-//	next();
-//};
-//
-//var test2 = function (req, res, next) {
-//	console.log('test2');
-//	next();
-//};
-//
-//var test3 = function (req, res, next) {
-//	console.log('test3');
-//	next();
-//};
-//
-//app.get('/test1', [test1, test2, test3], function (req, res, next) {
-//	res.end('OK');
-//});
-
 app.get('/test', function (req, res, next) {
 	console.log(req.headers);
 	var header = req.headers.authorization || '',			// get the header
@@ -87,17 +68,26 @@ app.get('/test', function (req, res, next) {
 
 app.use(express.static(path.join(__dirname, './dist')));
 
-app.use(function (err, req, res, next) {
-	console.log(err.stack);
-	res.status(500).json({
-		message: 'Server Error'
+app.use(function (req, res, next) {
+	next({
+		message: 'invalid_url',
+		status: 404
 	});
 });
 
-app.use(function (req, res) {
-	res.status(404).json({
-		message: 'Not Found'
-	});
+app.use(function (err, req, res, next) {
+	if (err.status) {
+		res.status(err.status).json({
+			message: err.message,
+			debug: err.debug
+		});
+	} else {
+		console.log(err.stack);
+		res.status(500).json({
+			debug: err.message,
+			message: 'server Error'
+		});
+	}
 });
 
 app.listen(8008, function () {
