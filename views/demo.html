@@ -20,26 +20,21 @@
 			<div class="left">
 				<form id="addAccount">
 					Add Account:<br>
-					<input type="text" name="domain" placeholder="domain" /><br>
 					<input type="text" name="user" placeholder="id" /><span class="alert">*</span><br>
 					<input type="text" name="org" placeholder="org" /><span class="alert">*</span><br>
-					<input type="text" name="email" placeholder="email" /><br>
 					<input type="submit">
 				</form>
 				<br><br>
 				<form id="addApplication">
 					Add Application:<br>
-					<input type="text" name="app_name" placeholder="app_name" /><span class="alert">*</span><br>
+					<input type="text" name="name" placeholder="name" /><span class="alert">*</span><br>
 					<input type="text" name="os" placeholder="os" /><span class="alert">*</span><br>
-					<input type="text" name="app_version" placeholder="app_version" /><span class="alert">*</span><br>
-					<input type="text" name="owner" placeholder="owner" /><span class="alert">*</span><br>
-					<input type="text" name="org" placeholder="org" /><span class="alert">*</span><br>
+					<input type="text" name="version" placeholder="version" /><span class="alert">*</span><br>
 					<input type="submit">
 				</form>
 				<br><br>
 				<form id="addDevice">
 					Add Device:<br>
-					<input type="text" name="app_id" placeholder="app_id" /><span class="alert">*</span><br>
 					<input type="text" name="lang" placeholder="lang" /><span>(default='zh_tw')</span><br>
 					<input type="text" name="imei" placeholder="imei" /><span class="alert">*</span><br>
 					<input type="text" name="serial_id" placeholder="serial_id" /><span class="alert">*</span><br>
@@ -55,6 +50,7 @@
 					<input type="text" name="org" placeholder="org" /><span class="alert">*</span><br>
 					<input type="text" name="password" placeholder="password" /><span class="alert">*</span><br>
 					<input type="text" name="device_id" placeholder="device_id" /><span class="alert">*</span><br>
+					<input type="hidden" name="response_type" value="grant_token">
 					<input type="submit">
 				</form>
 				<br><br>
@@ -109,7 +105,7 @@
 				e.preventDefault();
 				$.ajax({
 					type: "POST",
-					url: "/account/add",
+					url: "/account",
 					data: $('#addAccount').serialize(),
 					dataType: "json",
 					success: function (data) {
@@ -129,7 +125,7 @@
 				e.preventDefault();
 				$.ajax({
 					type: "POST",
-					url: "/auth/app",
+					url: "/client",
 					data: $('#addApplication').serialize(),
 					dataType: "json",
 					success: function (data) {
@@ -149,7 +145,7 @@
 				e.preventDefault();
 				$.ajax({
 					type: "POST",
-					url: "/auth/device",
+					url: "/device",
 					data: $('#addDevice').serialize(),
 					dataType: "json",
 					success: function (data) {
@@ -169,7 +165,7 @@
 				e.preventDefault();
 				$.ajax({
 					type: "POST",
-					url: "/account/login",
+					url: "/auth",
 					data: $('#login').serialize(),
 					dataType: "json",
 					success: function (data) {
@@ -229,7 +225,7 @@
 				e.preventDefault();
 				$.ajax({
 					type: "POST",
-					url: "/auth/token",
+					url: "/token",
 					data: $('#getToken').serialize(),
 					dataType: "json",
 					success: function (data) {
@@ -249,7 +245,7 @@
 				e.preventDefault();
 				$.ajax({
 					type: "POST",
-					url: "/auth/token",
+					url: "/token",
 					data: $('#refreshToken').serialize(),
 					dataType: "json",
 					success: function (data) {

@@ -51,19 +51,16 @@ app.get('/api', function (req, res) {
 });
 
 app.get('/test', function (req, res, next) {
-	console.log(req.headers);
-	var header = req.headers.authorization || '',			// get the header
-		token = header.split(/\s+/).pop() || '',			// and the encoded auth token
-		auth = new Buffer(token, 'base64').toString(),		// convert from base64
-		parts = auth.split(/:/),							// split on colon
-		username = parts[0],
-		password = parts[1];
-	console.log(header);
-	console.log(token);
-	console.log(auth);
-	console.log(parts);
-	res.writeHead(200, {'Content-Type': 'text/plain'});
-	res.end('username is "' + username + '" and password is "' + password + '"');
+//	var header = req.headers.authorization || '',			// get the header
+//		token = header.split(/\s+/).pop() || '',			// and the encoded auth token
+//		auth = new Buffer(token, 'base64').toString(),		// convert from base64
+//		parts = auth.split(/:/),							// split on colon
+//		username = parts[0],
+//		password = parts[1];
+	var arr = ['aaa', 'bbb'];
+	console.log(typeof arr);
+	console.log(typeof req.query.id);
+	res.json({ret: req.query.id});
 });
 
 app.use(express.static(path.join(__dirname, './dist')));
@@ -82,7 +79,7 @@ app.use(function (err, req, res, next) {
 			debug: err.debug
 		});
 	} else {
-		console.log(err.stack);
+		console.log(err);
 		res.status(500).json({
 			debug: err.message,
 			message: 'server Error'

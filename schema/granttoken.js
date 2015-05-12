@@ -44,9 +44,9 @@ GrantTokenSchema.path('id').validate(function (value, response) {
 		if (err) {
 			response(false);
 		} else if (!result) {
-			response(false);
-		} else {
 			response(true);
+		} else {
+			response(false);
 		}
 	});
 }, 'Validation of {id} failed');

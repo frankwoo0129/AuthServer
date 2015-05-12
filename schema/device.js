@@ -135,40 +135,6 @@ var getDevice = function (deviceId, callback) {
 };
 
 var addDevice = function (config, clientId, callback) {
-//	if (!req.body.imei) {
-//		next({
-//			message: 'No \'imei\'',
-//			status: 400
-//		});
-//	} else if (!req.body.lang) {
-//		/*lang default value = 'zh_tw'*/
-//		req.body.lang = 'zh_tw';
-//	} else if (!req.body.serial_id) {
-//		next({
-//			message: 'No \'serial_id\'',
-//			status: 400
-//		});
-//	} else if (!req.body.device_type) {
-//		next({
-//			message: 'No \'device_type\'',
-//			status: 400
-//		});
-//	} else if (!req.body.os) {
-//		next({
-//			message: 'No \'os\'',
-//			status: 400
-//		});
-//	} else if (!req.body.version) {
-//		next({
-//			message: 'No \'version\'',
-//			status: 400
-//		});
-//	} else if (!req.body.app_id) {
-//		next({
-//			message: 'No \'app_id\'',
-//			status: 400
-//		});
-//	} else {
 	var newDevice = new Device();
 	newDevice.lang = config.lang;
 	newDevice.imei = config.imei;

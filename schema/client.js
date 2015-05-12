@@ -61,22 +61,6 @@ ClientSchema.pre('save', function (next) {
 	});
 });
 
-//ClientSchema.pre('save', function (next) {
-//	var self = this;
-//	Client.findOne({
-//		user: self.owner.user,
-//		org: self.owner.org
-//	}, function (err, result) {
-//		if (err) {
-//			next(err);
-//		} else if (!result) {
-//			next(new Error('No this owner'));
-//		} else {
-//			next();
-//		}
-//	});
-//});
-
 ClientSchema.path('id').validate(function (value, response) {
 	var self = this;
 	Client.findOne({
@@ -118,32 +102,6 @@ var getClient = function (clientId, callback) {
 };
 
 var addClient = function (name, os, version, userId, callback) {
-//	if (!req.body.app_name) {
-//		next({
-//			message: 'No \'app_name\'',
-//			status: 400
-//		});
-//	} else if (!req.body.os) {
-//		next({
-//			message: 'No \'os\'',
-//			status: 400
-//		});
-//	} else if (!req.body.app_version) {
-//		next({
-//			message: 'No \'app_version\'',
-//			status: 400
-//		});
-//	} else if (!req.body.owner) {
-//		next({
-//			message: 'No \'owner\'',
-//			status: 400
-//		});
-//	} else if (!req.body.org) {
-//		next({
-//			message: 'No \'org\'',
-//			status: 400
-//		});
-//	} else {
 	var newClient = new Client();
 	newClient.name = name;
 	newClient.os = os;

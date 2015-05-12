@@ -320,5 +320,5 @@ module.exports.getUser = getUser;
 module.exports.addUser = addUser;
 module.exports.deleteUser = deleteUser;
 
-module.exports.getClientConfigure = getUserConfigure;
-module.exports.setClientConfigure = setUserConfigure;
+module.exports.getUserConfigure = getUserConfigure;
+module.exports.setUserConfigure = setUserConfigure;

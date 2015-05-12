@@ -3,8 +3,8 @@
 'use strict';
 
 var mongoose = require('mongoose');
-var Client = require('./client');
-var User = require('./user');
+var Client = require('./client').Client;
+var User = require('./user').User;
 
 var RefreshTokenSchema = new mongoose.Schema({
 	id: {
@@ -12,6 +12,10 @@ var RefreshTokenSchema = new mongoose.Schema({
 		required: true
 	},
 	clientId: {
+		type: String,
+		required: true
+	},
+	clientSecret: {
 		type: String,
 		required: true
 	},
@@ -35,9 +39,9 @@ RefreshTokenSchema.path('id').validate(function (value, response) {
 		if (err) {
 			response(false);
 		} else if (!result) {
-			response(false);
-		} else {
 			response(true);
+		} else {
+			response(false);
 		}
 	});
 }, 'Validation of {id} failed');
