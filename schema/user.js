@@ -287,6 +287,8 @@ var setUserConfigure = function (userId, config, callback) {
 	} else {
 		User.findOneAndUpdate(query, {
 			$set: set
+		}, {
+			new: true
 		}, function (err, result) {
 			if (err) {
 				callback(err);

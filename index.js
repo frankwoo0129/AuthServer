@@ -6,6 +6,7 @@
 var path = require('path');
 var fs = require('fs');
 var express = require('express');
+var basicAuth = require('basic-auth');
 var hbs = require('hbs');
 var marked = require('marked');
 var cookieParser = require('cookie-parser');
@@ -39,6 +40,17 @@ app.get('/', function (req, res) {
 	res.render('demo');
 });
 
+app.get('/example', function (req, res) {
+	var path = __dirname + '/views/example.md';
+	fs.readFile(path, 'utf8', function (err, data) {
+		if (err) {
+			res.sendStatus(404);
+		} else {
+			res.render('markdown', {body: marked(data.toString())});
+		}
+	});
+});
+
 app.get('/api', function (req, res) {
 	var path = __dirname + '/views/API_BY_Frank.md';
 	fs.readFile(path, 'utf8', function (err, data) {
@@ -57,10 +69,15 @@ app.get('/test', function (req, res, next) {
 //		parts = auth.split(/:/),							// split on colon
 //		username = parts[0],
 //		password = parts[1];
-	var arr = ['aaa', 'bbb'];
-	console.log(typeof arr);
-	console.log(typeof req.query.id);
-	res.json({ret: req.query.id});
+	var user = basicAuth(req);
+	if (!user) {
+		return next({
+			debug: 'no authorization header',
+			message: 'invalid_request',
+			status: 400
+		});
+	}
+	res.json(user);
 });
 
 app.use(express.static(path.join(__dirname, './dist')));

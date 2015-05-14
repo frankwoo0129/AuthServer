@@ -33,6 +33,28 @@ root.get('/profile', function (req, res, next) {
 	}
 });
 
+root.post('/profile', function (req, res, next) {
+	if (!req.body.user) {
+		next({
+			debug: 'no user',
+			message: 'invalid_request',
+			status: 400
+		});
+	} else {
+		var config = {};
+		config.email = req.body.email;
+		config.mobile_phone = req.body.mobile_phone;
+		config.work_phone = req.body.work_phone;
+		User.setUserConfigure(req.body.user, config, function (err, result) {
+			if (err) {
+				next(err);
+			} else {
+				res.json(result);
+			}
+		});
+	}
+});
+
 root.get('/', function (req, res, next) {
 	if (!req.query.username) {
 		next({
@@ -104,7 +126,7 @@ root.delete('/', function (req, res, next) {
 	}
 });
 
-root.post('/resetPassword', function (req, res, next) {
+root.post('/resetpassword', function (req, res, next) {
 	if (!req.body.user) {
 		next({
 			message: 'no user',
@@ -121,7 +143,7 @@ root.post('/resetPassword', function (req, res, next) {
 	}
 });
 
-root.post('/changePassword', function (req, res, next) {
+root.post('/changepassword', function (req, res, next) {
 	if (!req.body.user) {
 		next({
 			message: 'no user',

@@ -35,6 +35,20 @@ var AccessTokenSchema = new mongoose.Schema({
 
 var AccessToken = mongoose.model('AccessToken', AccessTokenSchema);
 
+AccessTokenSchema.path('id').validate(function (value, response) {
+	AccessToken.findOne({
+		id: value
+	}, function (err, result) {
+		if (err) {
+			response(false);
+		} else if (!result) {
+			response(true);
+		} else {
+			response(false);
+		}
+	});
+}, 'Validation of {id} failed');
+
 AccessTokenSchema.path('clientId').validate(function (value, response) {
 	Client.findOne({
 		id: value,
