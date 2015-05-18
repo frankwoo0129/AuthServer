@@ -190,6 +190,8 @@ var changePassword = function (userId, password, newPassword, callback) {
 			password: newPassword,
 			changePassword: false
 		}
+	}, {
+		new: true
 	}, function (err, result) {
 		if (err) {
 			callback(err);
@@ -216,6 +218,8 @@ var resetPassword = function (userId, callback) {
 			password: randomPassword(6),
 			changePassword: true
 		}
+	}, {
+		new: true
 	}, function (err, result) {
 		if (err) {
 			callback(err);

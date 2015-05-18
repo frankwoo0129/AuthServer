@@ -14,13 +14,13 @@
 > 傳送機器資訊，以利後續資料傳遞時之用途
 
 ### Url
-* /auth/device
+* /device
 
 #### Method
 * POST
 
 #### Parameter
-* __app_id__ `String` APP註冊碼
+* __clientId__ `String` APP註冊碼
 * __lang__ `String` 語系(Default為繁體中文)
 * __imei__ `String` Mobile上的IMEI
 * __serial_id__ `String` Mobile序號
@@ -37,13 +37,13 @@
 
 #### Output
 * __message__ `String` 若http code不為2XX，將會傳回錯誤訊息。
-* __device_id__ `String` 機器代碼
+* __id__ `String` 機器代碼
 
 #### Example
 > JSON Format which request GetDeviceID API
 >
 >		{
->			"app_id": "dQIDAQAB",
+>			"clientId": "dQIDAQAB",
 >			"imei": "28390938203392",
 >			"serial_id": "12xl03ld2001",
 >			"device_type": "iPhone 5S",
@@ -54,7 +54,7 @@
 > JSON Format which response from GetDeviceID API
 >
 >		{
->			"device_id": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvJb60"
+>			"id": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvJb60"
 >		}
 
 ---
@@ -105,18 +105,18 @@
 
 ---
 
-### ClientConfig
+### Profile
 > 傳送email、行動電話
 > 尚未完成
 
 ### Url
-* /account/configure
+* /account/profile
 
 #### Method
 * POST
 
 #### Parameter
-* __client_id__ `String` 客戶代碼
+* __user__ `String` 客戶代碼
 * __email__ `String` 公司電子郵件信箱
 * __mobile_phone__ `String` 行動電話
 * __work_phone__ `String` 辦公室分機
@@ -139,7 +139,7 @@
 > JSON Format which request ClientConfig API
 >
 >		{
->			"client_id": "8506400952701030",
+>			"id": "8506400952701030",
 >			"email": "jacky.lee@foxconn.com",
 >			"mobile_phone": "0932000000",
 >			"work_phone": "5500000"
@@ -148,7 +148,7 @@
 > JSON Format which response from ClientConfig API
 >
 >		{
->			"client_id": "8506400952701030",
+>			"id": "8506400952701030",
 >			"user": "802172",
 >			"org": "foxconn",
 >			"email": "jacky.lee@foxconn.com",
@@ -162,10 +162,13 @@
 > 為取得該帳號的Token
 
 #### Url
-* /auth/token
+* /oauth/token
 
 #### Method
 * POST
+
+#### Header
+* __Authorization__ `String`
 
 #### Parameter
 * __app_id__ `String` APP代碼(必填)
@@ -239,7 +242,7 @@
 * POST
 
 #### Parameter
-* __client_id__ `String` 客戶代碼(必填)
+* __user__ `String` 客戶代碼(必填)
 * __password__ `String` 原先密碼(必填，需用md5加密過)
 * __newpassword__ `String` 新密碼(必填，需用md5加密過)
 
@@ -251,21 +254,21 @@
 * __500__ 內部伺服器錯誤
 
 #### Output
-* __client_id__ 客戶代碼
+* __id__ 客戶代碼
 * __message__ 若http code不為2XX，將會傳回錯誤訊息。
 
 #### Example
 > JSON Format which request ChangePassword API
 >
 >		{
->			"client_id": "8506400952701030",
+>			"user": "8506400952701030",
 >			"password": "password",
 >			"newpassword": "new_password"
 >		}
 > JSON Format which response from ChangePassword API
 >
 >		{
->			"client_id": "8506400952701030"
+>			"id": "8506400952701030"
 >		}
 
 ---
@@ -280,7 +283,7 @@
 * POST
 
 #### Parameter
-* __client_id__ `String` 客戶代碼(必填)
+* __user__ `String` 客戶代碼(必填)
 
 #### HTTP code
 * __200__ 表示成功
@@ -289,7 +292,7 @@
 * __500__ 內部伺服器錯誤
 
 #### Output
-* __client_id__ 客戶代碼
+* __id__ 客戶代碼
 * __password__ 預設密碼
 * __message__ 若http code不為2XX，將會傳回錯誤訊息。
 
@@ -297,12 +300,12 @@
 > JSON Format which request ResetPassword API
 >
 >		{
->			"client_id": "8506400952701030"
+>			"user": "8506400952701030"
 >		}
 > JSON Format which response from ResetPassword API
 >
 >		{
->			"client_id": "8506400952701030",
+>			"id": "8506400952701030",
 >			"passowrd": "d7cjm9"
 >		}
 

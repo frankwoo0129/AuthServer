@@ -20,7 +20,7 @@
 			<div class="left">
 				<form id="addAccount">
 					Add Account:<br>
-					<input type="text" name="user" placeholder="id" /><span class="alert">*</span><br>
+					<input type="text" name="username" placeholder="id" /><span class="alert">*</span><br>
 					<input type="text" name="org" placeholder="org" /><span class="alert">*</span><br>
 					<input type="submit">
 				</form>
@@ -35,6 +35,7 @@
 				<br><br>
 				<form id="addDevice">
 					Add Device:<br>
+					<input type="text" name="clientId" placeholder="clientId" /><span class="alert">*</span><br>
 					<input type="text" name="lang" placeholder="lang" /><span>(default='zh_tw')</span><br>
 					<input type="text" name="imei" placeholder="imei" /><span class="alert">*</span><br>
 					<input type="text" name="serial_id" placeholder="serial_id" /><span class="alert">*</span><br>
@@ -50,7 +51,7 @@
 					<input type="text" name="org" placeholder="org" /><span class="alert">*</span><br>
 					<input type="text" name="password" placeholder="password" /><span class="alert">*</span><br>
 					<input type="text" name="device_id" placeholder="device_id" /><span class="alert">*</span><br>
-					<input type="hidden" name="response_type" value="grant_token">
+					<input type="hidden" name="response_type" value="password">
 					<input type="submit">
 				</form>
 				<br><br>
@@ -65,16 +66,6 @@
 				<form id="resetPassword">
 					Reset Password:<br>
 					<input type="text" name="client_id" placeholder="client_id" /><span class="alert">*</span><br>
-					<input type="submit">
-				</form>
-				<br><br>
-				<form id="getToken">
-					Get Access Token:<br>
-					<input type="text" name="client_id" placeholder="client_id" /><span class="alert">*</span><br>
-					<input type="text" name="app_id" placeholder="app_id" /><span class="alert">*</span><br>
-					<input type="text" name="device_id" placeholder="device_id" /><span class="alert">*</span><br>
-					<input type="text" name="client_token" placeholder="client_token" /><span class="alert">*</span><br>
-					<input type="text" name="token_type" value="access_token" /><span class="alert">*</span><br>
 					<input type="submit">
 				</form>
 				<br><br>
@@ -165,7 +156,7 @@
 				e.preventDefault();
 				$.ajax({
 					type: "POST",
-					url: "/auth",
+					url: "/oauth/token",
 					data: $('#login').serialize(),
 					dataType: "json",
 					success: function (data) {
@@ -221,31 +212,11 @@
 				});
 			});
 			
-			$('#getToken').submit(function (e) {
-				e.preventDefault();
-				$.ajax({
-					type: "POST",
-					url: "/token",
-					data: $('#getToken').serialize(),
-					dataType: "json",
-					success: function (data) {
-						$('#result').html(JSON.stringify(data));
-						$('#save').append(JSON.stringify(data));
-						$('#save').append('\n');
-					},
-					error: function (data) {
-						$('#result').html(data.responseText);
-						$('#save').append(data.responseText);
-						$('#save').append('\n');
-					}
-				});
-			});
-			
 			$('#refreshToken').submit(function (e) {
 				e.preventDefault();
 				$.ajax({
 					type: "POST",
-					url: "/token",
+					url: "/oauth/token",
 					data: $('#refreshToken').serialize(),
 					dataType: "json",
 					success: function (data) {

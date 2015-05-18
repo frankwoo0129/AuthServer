@@ -97,6 +97,7 @@ app.use(function (err, req, res, next) {
 		});
 	} else {
 		console.log(err);
+		console.log(err.stack);
 		res.status(500).json({
 			debug: err.message,
 			message: 'server Error'
