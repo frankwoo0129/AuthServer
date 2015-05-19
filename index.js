@@ -62,6 +62,17 @@ app.get('/api', function (req, res) {
 	});
 });
 
+app.get('/api/:id', function (req, res) {
+	var path = __dirname + '/views/api/' + req.params.id + '.md';
+	fs.readFile(path, 'utf8', function (err, data) {
+		if (err) {
+			res.sendStatus(404);
+		} else {
+			res.render('markdown', {body: marked(data.toString())});
+		}
+	});
+});
+
 app.get('/test', function (req, res, next) {
 //	var header = req.headers.authorization || '',			// get the header
 //		token = header.split(/\s+/).pop() || '',			// and the encoded auth token

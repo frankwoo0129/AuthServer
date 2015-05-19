@@ -9,7 +9,43 @@ var User = require('../schema/user');
 
 root.get('/profile', function (req, res, next) {
 	var ret = {};
-	if (typeof req.query.userId === 'string') {
+	if (req.query.org) {
+		if (typeof req.query.user === 'string') {
+			User.getUserId(req.query.user, req.query.org, function (err, result) {
+				if (err) {
+					next(err);
+				} else {
+					var userId = result.id;
+					User.getUserConfigure(userId, function (err, result) {
+						if (err) {
+							next(err);
+						} else {
+							res.json(result);
+						}
+					});
+				}
+			});
+		} else if (typeof req.query.user === 'object') {
+			async.map(req.query.user, User.getUserIdByOrg(req.query.org), function (err, userIds) {
+				if (err) {
+					next(err);
+				} else {
+					async.map(userIds, User.getUserConfigure, function (err, results) {
+						if (err) {
+							next(err);
+						} else {
+							res.json(results);
+						}
+					});
+				}
+			});
+		} else {
+			next({
+				message: 'no user',
+				status: 400
+			});
+		}
+	} else if (typeof req.query.userId === 'string') {
 		User.getUserConfigure(req.query.userId, function (err, result) {
 			if (err) {
 				next(err);
@@ -90,7 +126,7 @@ root.get('/:userId', function (req, res, next) {
 root.post('/', function (req, res, next) {
 	if (!req.body.user) {
 		next({
-			message: 'no username',
+			message: 'no user',
 			status: 400
 		});
 	} else if (!req.body.org) {

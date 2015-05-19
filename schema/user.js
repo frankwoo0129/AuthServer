@@ -102,6 +102,12 @@ var getUserId = function (user, org, callback) {
 	});
 };
 
+var getUserIdByOrg = function (org) {
+	return function (user, callback) {
+		getUserId(user, org, callback);
+	};
+};
+
 var getUser = function (userId, callback) {
 	var query = {
 		id: userId
@@ -321,6 +327,7 @@ module.exports.User = User;
 module.exports.resetPassword = resetPassword;
 module.exports.changePassword = changePassword;
 
+module.exports.getUserIdByOrg = getUserIdByOrg;
 module.exports.getUserId = getUserId;
 module.exports.getUser = getUser;
 module.exports.addUser = addUser;

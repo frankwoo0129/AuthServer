@@ -18,7 +18,7 @@ var checkPassword = function (user, password, callback) {
 			status: 400
 		});
 	} else {
-		oauth2.getUser(user, password, function (err, result) {
+		oauth2.getUser(user, password, function (err) {
 			if (err) {
 				callback(err);
 			} else {
