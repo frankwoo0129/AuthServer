@@ -41,7 +41,7 @@ var checkAccessToken = function (req, res, next) {
 			});
 		} else {
 			res.status(200).json({
-				user: accessToken.userId,
+				userId: accessToken.userId,
 				expires: accessToken.expires
 			});
 		}
@@ -154,7 +154,7 @@ var usePassword = function (req, res, next) {
 			status: 400
 		});
 	} else if (req.body.userId) {
-		oauth2.getUser(req.body.userId, req.body.password, function (err, result) {
+		oauth2.getUser(req.body.userId, req.body.password, function (err) {
 			if (err) {
 				next(err);
 			} else {
@@ -180,7 +180,7 @@ var usePassword = function (req, res, next) {
 				next(err);
 			} else {
 				var userId = result.id;
-				oauth2.getUser(userId, req.body.password, function (err, result) {
+				oauth2.getUser(userId, req.body.password, function (err) {
 					if (err) {
 						next(err);
 					} else {
@@ -262,7 +262,7 @@ var checkGrantType = function (req, res, next) {
 };
 
 var sendAccessToken = function (req, res, next) {
-	oauth2.saveAccessToken(req.oauth.clientId, req.oauth.clientSecret, 3600, req.oauth.user, function (err, accessToken) {
+	oauth2.saveAccessToken(req.oauth.clientId, req.oauth.clientSecret, 3600, req.oauth.userId, function (err, accessToken) {
 		if (err) {
 			next(err);
 		} else {
@@ -276,7 +276,7 @@ var sendRefreshToken = function (req, res, next) {
 	if (req.oauth.grant_type === 'refresh_token') {
 		next();
 	} else {
-		oauth2.saveRefreshToken(req.oauth.clientId, req.oauth.clientSecret, 86400, req.oauth.user, function (err, refreshToken) {
+		oauth2.saveRefreshToken(req.oauth.clientId, req.oauth.clientSecret, 86400, req.oauth.userId, function (err, refreshToken) {
 			if (err) {
 				next(err);
 			} else {
@@ -308,6 +308,6 @@ var sendResponse = function (req, res, next) {
 	}
 };
 
+module.exports.checkClient = checkClient;
 module.exports.getToken = checkAccessToken;
-
 module.exports.postToGetToken = [checkClient, checkGrantTypeAllowed, checkGrantType, sendAccessToken, sendRefreshToken, sendResponse];

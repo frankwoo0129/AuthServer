@@ -80,7 +80,14 @@ var getClient = function (clientId, callback) {
 	var query = {
 		id: clientId
 	};
-	Client.findOne(query, function (err, result) {
+	Client.findOne(query, {
+		id: true,
+		name: true,
+		os: true,
+		version: true,
+		owner: true,
+		"_id": false
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
@@ -90,13 +97,7 @@ var getClient = function (clientId, callback) {
 				status: 404
 			});
 		} else {
-			callback(null, {
-				id: result.id,
-				name: result.name,
-				os: result.os,
-				version: result.version,
-				owner: result.owner
-			});
+			callback(null, result);
 		}
 	});
 };

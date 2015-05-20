@@ -83,7 +83,12 @@ var getUserId = function (user, org, callback) {
 		user: user,
 		org: org
 	};
-	User.findOne(query, function (err, result) {
+	User.findOne(query,  {
+		id: true,
+		user: true,
+		org: true,
+		"_id": false
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
@@ -93,11 +98,7 @@ var getUserId = function (user, org, callback) {
 				status: 404
 			});
 		} else {
-			callback(null, {
-				id: result.id,
-				user: result.user,
-				org: result.org
-			});
+			callback(null, result);
 		}
 	});
 };
@@ -112,7 +113,12 @@ var getUser = function (userId, callback) {
 	var query = {
 		id: userId
 	};
-	User.findOne(query, function (err, result) {
+	User.findOne(query, {
+		id: true,
+		user: true,
+		org: true,
+		"_id": false
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
@@ -122,11 +128,7 @@ var getUser = function (userId, callback) {
 				status: 404
 			});
 		} else {
-			callback(null, {
-				id: result.id,
-				user: result.user,
-				org: result.org
-			});
+			callback(null, result);
 		}
 	});
 };
@@ -177,11 +179,7 @@ var deleteUser = function (userId, callback) {
 				status: 404
 			});
 		} else {
-			callback(null, {
-				id: result.id,
-				user: result.user,
-				org: result.org
-			});
+			callback(null, result);
 		}
 	});
 };
@@ -248,7 +246,15 @@ var getUserConfigure = function (userId, callback) {
 	var query = {
 		id: userId
 	};
-	User.findOne(query, function (err, result) {
+	User.findOne(query, {
+		id: true,
+		user: true,
+		org: true,
+		email: true,
+		mobile_phone: true,
+		work_phone: true,
+		"_id": false
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {

@@ -111,7 +111,16 @@ var getDevice = function (deviceId, callback) {
 	var query = {
 		id: deviceId
 	};
-	Device.findOne(query, function (err, result) {
+	Device.findOne(query, {
+		id: true,
+		lang: true,
+		imei: true,
+		serialId: true,
+		deviceType: true,
+		os: true,
+		version: true,
+		"_id": false
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
@@ -121,15 +130,7 @@ var getDevice = function (deviceId, callback) {
 				status: 404
 			});
 		} else {
-			callback(null, {
-				id: result.id,
-				lang: result.lang,
-				imei: result.imei,
-				serialId: result.serialId,
-				deviceType: result.deviceType,
-				os: result.os,
-				version: result.version
-			});
+			callback(null, result);
 		}
 	});
 };

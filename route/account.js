@@ -6,6 +6,7 @@
 var async = require('async');
 var root = require('express').Router();
 var User = require('../schema/user');
+var checkClient = require('./token').checkClient;
 
 root.get('/profile', function (req, res, next) {
 	var ret = {};

@@ -1,8 +1,28 @@
-### userId
-> 傳送email、行動電話、帳號與密碼後，取得客戶代碼，以利後續資料傳遞時之用途
+### Account
+> GET:  取得客戶代碼
+> POST: 新增帳號
 
 ### Url
 * /account
+
+#### Method
+* GET
+
+#### Parameter
+* __user__ `String` 使用者帳號(必填)
+* __org__ `String` 公司名稱(必填)
+
+#### HTTP code
+* __200__ 表示成功
+* __205__ 清除所有系統資料，轉至系統設定畫面
+* __400__ 缺少參數，或參數不正確
+* __500__ 內部伺服器錯誤
+
+#### Output
+* __message__ 若http code不為2XX，將會傳回錯誤訊息。
+* __id__ 客戶代碼
+* __user__ `String` 使用者帳號
+* __org__ `String` 公司名稱
 
 #### Method
 * POST
@@ -42,11 +62,33 @@
 ---
 
 ### Profile
-> 傳送email、行動電話
-> 尚未完成
+> GET:  取得email、行動電話
+> POST: 編輯email、行動電話
 
 ### Url
 * /account/profile
+
+#### Method
+* GET
+
+#### Parameter
+* __userId__ `String` 客戶代碼
+
+#### HTTP code
+* __200__ 表示成功
+* __205__ 清除所有系統資料，轉至系統設定畫面
+* __400__ 缺少參數，或參數不正確
+* __401__ 帳號或密碼錯誤
+* __500__ 內部伺服器錯誤
+
+#### Output
+* __message__ 若http code不為2XX，將會傳回錯誤訊息。
+* __id__ 客戶代碼
+* __user__ 客戶名稱
+* __org__ 客戶公司
+* __email__ 公司電子郵件信箱
+* __mobile_phone__ 行動電話
+* __work_phone__ 辦公室分機
 
 #### Method
 * POST
