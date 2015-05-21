@@ -4,6 +4,7 @@
 
 var mongoose = require('mongoose');
 var md5 = require('../lib/md5');
+var random = require('../lib/util').randomString('abcdefghijklmnopqrstuvwxyz0123456789', 32);
 
 /*
  *	Main Key:
@@ -16,13 +17,18 @@ var ClientSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	secret: {
+		type: String
+	},
 	name: {
 		type: String,
 		required: true
 	},
+	type: {
+		type: String
+	},
 	os: {
-		type: String,
-		required: true
+		type: String
 	},
 	version: {
 		type: String,
@@ -48,6 +54,7 @@ ClientSchema.pre('save', function (next) {
 	var self = this;
 	Client.findOne({
 		name: self.name,
+		type: self.type,
 		os: self.os,
 		version: self.version
 	}, function (err, result) {
@@ -83,6 +90,7 @@ var getClient = function (clientId, callback) {
 	Client.findOne(query, {
 		id: true,
 		name: true,
+		type: true,
 		os: true,
 		version: true,
 		owner: true,
@@ -102,9 +110,13 @@ var getClient = function (clientId, callback) {
 	});
 };
 
-var addClient = function (name, os, version, userId, callback) {
+var addClient = function (name, type, os, version, userId, callback) {
 	var newClient = new Client();
 	newClient.name = name;
+	newClient.type = type;
+	if (type === 'application_web') {
+		newClient.secret = random();
+	}
 	newClient.os = os;
 	newClient.version = version;
 	newClient.id = md5.md5sum(JSON.stringify(newClient));
@@ -116,7 +128,9 @@ var addClient = function (name, os, version, userId, callback) {
 		} else {
 			callback(null, {
 				clientId: newClient.id,
+				clientSecret: newClient.secret,
 				name: newClient.name,
+				type: newClient.type,
 				version: newClient.version,
 				os: newClient.os,
 				owner: newClient.owner

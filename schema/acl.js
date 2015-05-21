@@ -25,17 +25,34 @@ var ACLSchema = new mongoose.Schema({
 
 var ACL = mongoose.model('ACL', ACLSchema);
 
-var getRoles = function (clientId, callback) {
+var getACL = function (clientId, callback) {
 	ACL.findOne({
 		clientId: clientId
+	}, {
+		name: true,
+		clientId: true,
+		roles: true,
+		"_id": false
 	}, function (err, result) {
 		if (err) {
 			callback(err);
-		} else {
-			callback(null, {
-				name: result.name,
-				roles: result.roles
+		} else if (!result) {
+			callback({
+				message: 'no ACL when getACL',
+				status: 404
 			});
+		} else {
+			callback(null, result);
+		}
+	});
+};
+
+var getRoles = function (clientId, callback) {
+	getACL(clientId, function (err, result) {
+		if (err) {
+			callback(err);
+		} else {
+			callback(null, result.roles);
 		}
 	});
 };

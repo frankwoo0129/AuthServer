@@ -20,7 +20,7 @@ root.get('/:clientId', function (req, res, next) {
 /*
  *  new a client ACL
  */
-root.post('/', function (req, res, next) {
+root.post('/clientId', function (req, res, next) {
 
 });
 
@@ -39,30 +39,36 @@ root.delete('/:clientId', function (req, res, next) {
 });
 
 /*
- *  
+ *  get All entry
  */
 root.get('/:clientId/entry', function (req, res, next) {
 
 });
 
 /*
- *  
+ *  get the roles in this entry 
  */
-root.delete('/:clientId', function (req, res, next) {
+root.get('/:clientId/:name/role', function (req, res, next) {
 
 });
 
 /*
- *  
+ *  enable role in this entry 
  */
-root.delete('/:clientId', function (req, res, next) {
+root.post('/:clientId/:name/role', function (req, res, next) {
 
 });
 
 /*
- *  
+ *  disable role in this entry 
  */
-root.delete('/:clientId', function (req, res, next) {
+root.delete('/:clientId/:name/role', function (req, res, next) {
 
 });
 
+/*
+ *  get all groups and people in this entry
+ */
+root.get('/:clientId/:name/group', function (req, res, next) {
+
+});

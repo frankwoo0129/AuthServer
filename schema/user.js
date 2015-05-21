@@ -243,9 +243,19 @@ var resetPassword = function (userId, callback) {
 };
 
 var getUserConfigure = function (userId, callback) {
-	var query = {
-		id: userId
-	};
+	var query;
+	if (typeof userId === 'object') {
+		query = userId;
+	} else if (typeof userId === 'string') {
+		query = {
+			id: userId
+		};
+	} else {
+		callback({
+			message: 'no userId when getUserConfigure',
+			status: 400
+		});
+	}
 	User.findOne(query, {
 		id: true,
 		user: true,
