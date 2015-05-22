@@ -295,6 +295,7 @@ var sendResponse = function (req, res, next) {
 	}
 	
 	if (req.oauth.access_token) {
+		ret.userId = req.oauth.userId;
 		ret.access_token = req.oauth.access_token;
 		ret.token_type = 'Bearer';
 		ret.expires_in = 3600;
