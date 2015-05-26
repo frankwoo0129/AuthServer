@@ -4,7 +4,7 @@
 "use strict";
 
 var root = require('express').Router();
-var ACLEntry = require('../schema/aclentry').ACLEntry;
+var ACLEntry = require('../schema/aclentry');
 
 root.get('/', function (req, res) {
 	res.send('Home');
@@ -42,33 +42,40 @@ root.delete('/:clientId', function (req, res, next) {
  *  get All entry
  */
 root.get('/:clientId/entry', function (req, res, next) {
-
+	
 });
 
 /*
- *  get the roles in this entry 
+ *  get the entry detail 
  */
-root.get('/:clientId/:name/role', function (req, res, next) {
+root.get('/:clientId/entry/:name', function (req, res, next) {
 
 });
 
 /*
  *  enable role in this entry 
  */
-root.post('/:clientId/:name/role', function (req, res, next) {
+root.post('/:clientId/entry/:name/role', function (req, res, next) {
 
 });
 
 /*
  *  disable role in this entry 
  */
-root.delete('/:clientId/:name/role', function (req, res, next) {
+root.delete('/:clientId/entry/:name/role', function (req, res, next) {
 
 });
 
 /*
- *  get all groups and people in this entry
+ *
  */
-root.get('/:clientId/:name/group', function (req, res, next) {
+root.post('/:clientId/entry/:name/member', function (req, res, next) {
+
+});
+
+/*
+ *
+ */
+root.delete('/:clientId/entry/:name/member', function (req, res, next) {
 
 });

@@ -14,12 +14,13 @@ var ACLSchema = new mongoose.Schema({
 		required: true
 	},
 	roles: {
-		type: [String]
+		type: [String],
+		default: []
 	},
 	createdAt: {
 		type: Date,
 		default: Date.now,
-	},
+	}
 });
 
 

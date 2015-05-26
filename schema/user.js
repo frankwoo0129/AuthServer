@@ -298,7 +298,7 @@ var setUserConfigure = function (userId, config, callback) {
 		change = true;
 	}
 	if (config.mobile_phone) {
-		set.modile_phone = config.mobile_phone;
+		set.mobile_phone = config.mobile_phone;
 		change = true;
 	}
 	if (config.work_phone) {
