@@ -48,6 +48,29 @@ var getACL = function (clientId, callback) {
 	});
 };
 
+var rename = function (clientId, name, callback) {
+	ACL.findOneAndUpdate({
+		clientId: clientId
+	}, {
+		$set: {
+			name: name
+		}
+	}, {
+		new: true
+	}, function (err, result) {
+		if (err) {
+			callback(err);
+		} else if (!result) {
+			callback({
+				message: 'no ACL when rename',
+				status: 404
+			});
+		} else {
+			callback();
+		}
+	});
+};
+
 var getRoles = function (clientId, callback) {
 	getACL(clientId, function (err, result) {
 		if (err) {
@@ -61,9 +84,13 @@ var getRoles = function (clientId, callback) {
 var addRole = function (clientId, rolename, callback) {
 	ACL.findOneAndUpdate({
 		clientId: clientId
-	}, {$addToSet: {
-		roles: rolename
-	}}, function (err, result) {
+	}, {
+		$addToSet: {
+			roles: rolename
+		}
+	}, {
+		new: true
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else {
@@ -75,9 +102,13 @@ var addRole = function (clientId, rolename, callback) {
 var deleteRole = function (clientId, rolename, callback) {
 	ACL.findOneAndUpdate({
 		clientId: clientId
-	}, {$pull: {
-		roles: rolename
-	}}, function (err, result) {
+	}, {
+		$pull: {
+			roles: rolename
+		}
+	}, {
+		new: true
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else {
@@ -92,9 +123,13 @@ var renameRole = function (clientId, oldname, newname, callback) {
 		roles: {
 			$in: [oldname]
 		}
-	}, {$set: {
-		"roles.$": newname
-	}}, function (err, result) {
+	}, {
+		$set: {
+			"roles.$": newname
+		}
+	}, {
+		new: true
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else {

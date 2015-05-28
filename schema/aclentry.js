@@ -24,9 +24,6 @@ var ACLEntrySchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	type: {
-		type: Number
-	},
 	name: {
 		type: String,
 		required: true
@@ -39,19 +36,23 @@ var ACLEntrySchema = new mongoose.Schema({
 		type: [String],
 		default: []
 	},
+	members: {
+		type: [Object],
+		default: []
+	},
+	description: String,
 	level: {
 		type: Number,
-		required: true
+		default: 0
 	}
 });
 
 var ACLEntry = mongoose.model('ACLEntry', ACLEntrySchema);
 
-var createACLEntry = function (clientId, name, level, callback) {
+var createACLEntry = function (clientId, name, callback) {
 	var entry = new ACLEntry();
 	entry.clientId = clientId;
 	entry.name = name;
-	entry.level = level;
 	entry.save(function (err) {
 		if (err) {
 			callback(err);
@@ -152,9 +153,10 @@ var getEntry = function (clientId, name, callback) {
 	}, {
 		"_id": false,
 		name: true,
-		type: true,
 		level: true,
-		roles: true
+		roles: true,
+		members: true,
+		description: true
 	}, function (err, result) {
 		if (err) {
 			callback(err);
@@ -164,6 +166,10 @@ var getEntry = function (clientId, name, callback) {
 			callback(null, result);
 		}
 	});
+};
+
+var rename = function (clientId, oldname, newname, callback) {
+	
 };
 
 module.exports.ACLEntry = ACLEntry;
