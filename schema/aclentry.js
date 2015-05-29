@@ -172,4 +172,12 @@ var rename = function (clientId, oldname, newname, callback) {
 	
 };
 
+var setLevel = function (clientId, name, level, callback) {
+	
+};
+
+var setDescription = function (clientId, name, description, callback) {
+	
+};
+
 module.exports.ACLEntry = ACLEntry;

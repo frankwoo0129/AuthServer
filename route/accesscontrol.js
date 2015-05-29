@@ -17,17 +17,10 @@ root.get('/:clientId', function (req, res, next) {
 		if (err) {
 			next(err);
 		} else {
-			ACLEntry.getAllEntry(req.params.clientId, function (err, result_ACLEntry) {
-				if (err) {
-					next(err);
-				} else {
-					res.json({
-						name: result_ACL.name,
-						clientId: result_ACL.clientId,
-						roles: result_ACL.roles,
-						entries: result_ACLEntry
-					});
-				}
+			res.json({
+				name: result_ACL.name,
+				clientId: result_ACL.clientId,
+				roles: result_ACL.roles,
 			});
 		}
 	});
@@ -36,6 +29,17 @@ root.get('/:clientId', function (req, res, next) {
 root.put('/:clientId/name', function (req, res, next) {
 	// 更名ACL
 	ACL.rename(req.params.clientId, req.body.name, function (err) {
+		if (err) {
+			next(err);
+		} else {
+			res.sendStatus(200);
+		}
+	});
+});
+
+root.put('/:clientId/role/:name', function (req, res, next) {
+	// 更名client角色
+	ACL.renameRole(req.params.clientId, req.params.name, req.body.name, function (err) {
 		if (err) {
 			next(err);
 		} else {
@@ -55,20 +59,9 @@ root.post('/:clientId/role', function (req, res, next) {
 	});
 });
 
-root.post('/:clientId/role/:name', function (req, res, next) {
-	// 更名client角色
-	ACL.renameRole(req.params.clientId, req.params.name, req.body.name, function (err) {
-		if (err) {
-			next(err);
-		} else {
-			res.sendStatus(200);
-		}
-	});
-});
-
-root.delete('/:clientId/role/:name', function (req, res, next) {
+root.delete('/:clientId/role', function (req, res, next) {
 	// 刪除client角色
-	ACL.deleteRole(req.params.clientId, req.params.name, function (err) {
+	ACL.deleteRole(req.params.clientId, req.body.name, function (err) {
 		if (err) {
 			next(err);
 		} else {
@@ -101,6 +94,17 @@ root.post('/:clientId/entry', function (req, res, next) {
 	});
 });
 
+root.delete('/:clientId/entry', function (req, res, next) {
+	// 刪除一個client ACLEntry
+	ACLEntry.removeACLEntry(req.params.clientId, req.body.name, function (err) {
+		if (err) {
+			next(err);
+		} else {
+			res.sendStatus(200);
+		}
+	});
+});
+
 root.get('/:clientId/entry/:name', function (req, res, next) {
 	// 取得client ACLEntry 詳細資料
 	ACLEntry.getEntry(req.params.clientId, req.params.name, function (err, result) {
@@ -112,8 +116,8 @@ root.get('/:clientId/entry/:name', function (req, res, next) {
 	});
 });
 
-root.post('/:clientId/entry/:name', function (req, res, next) {
-	// 變更client ACLEntry 名稱
+root.put('/:clientId/entry/:name/name', function (req, res, next) {
+	// 更名client ACLEntry
 	ACLEntry.rename(req.params.clientId, req.params.name, req.body.name, function (err) {
 		if (err) {
 			next(err);
@@ -123,9 +127,17 @@ root.post('/:clientId/entry/:name', function (req, res, next) {
 	});
 });
 
-root.delete('/:clientId/entry/:name', function (req, res, next) {
-	// 刪除一個client ACLEntry
-	ACLEntry.removeACLEntry(req.params.clientId, req.params.name, function (err) {
+root.post('/:clientId/entry/:name/member', function (req, res, next) {
+	// 新增人員或群組
+});
+
+root.delete('/:clientId/entry/:name/member', function (req, res, next) {
+	// 刪除人員或群組
+});
+
+root.post('/:clientId/entry/:name/role', function (req, res, next) {
+	// 新增client ACLEntry 角色
+	ACLEntry.enableRole(req.params.clientId, req.params.name, req.body.role, function (err) {
 		if (err) {
 			next(err);
 		} else {
@@ -134,42 +146,35 @@ root.delete('/:clientId/entry/:name', function (req, res, next) {
 	});
 });
 
-root.put('/:clientId/entry/:name', function (req, res, next) {
-	// 更新一個client ACLEntry
-});
-
-root.put('/:clientId/entry/:name/member', function (req, res, next) {
-	// 新增人員或群組
-});
-
-root.delete('/:clientId/entry/:name/member', function (req, res, next) {
-	// 刪除人員或群組
-});
-
-root.get('/:clientId/entry/:name/role', function (req, res, next) {
-	// 取得client ACLEntry 角色
-});
-
-root.post('/:clientId/entry/:name/role', function (req, res, next) {
-	// 新增client ACLEntry 角色
-});
-
 root.delete('/:clientId/entry/:name/role', function (req, res, next) {
 	// 刪除client ACLEntry 角色
-});
-
-root.get('/:clientId/entry/:name/level', function (req, res, next) {
-	// 取得client ACLEntry 權限
+	ACLEntry.disableRole(req.params.clientId, req.params.name, req.body.role, function (err) {
+		if (err) {
+			next(err);
+		} else {
+			res.sendStatus(200);
+		}
+	});
 });
 
 root.put('/:clientId/entry/:name/level', function (req, res, next) {
-	// 取得client ACLEntry 權限
-});
-
-root.get('/:clientId/entry/:name/description', function (req, res, next) {
-	// 取得client ACLEntry 敘述
+	// 變更client ACLEntry 權限
+	ACLEntry.setLevel(req.params.clientId, req.params.name, req.body.level, function (err) {
+		if (err) {
+			next(err);
+		} else {
+			res.sendStatus(200);
+		}
+	});
 });
 
 root.put('/:clientId/entry/:name/description', function (req, res, next) {
-	// 取得client ACLEntry 敘述
+	// 變更client ACLEntry 敘述
+	ACLEntry.setDescription(req.params.clientId, req.params.name, req.body.description, function (err) {
+		if (err) {
+			next(err);
+		} else {
+			res.sendStatus(200);
+		}
+	});
 });
