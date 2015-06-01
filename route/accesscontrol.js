@@ -3,6 +3,7 @@
 /*jslint es5: true */
 "use strict";
 
+var async = require('async');
 var root = require('express').Router();
 var ACL = require('../schema/acl');
 var ACLEntry = require('../schema/aclentry');
@@ -17,22 +18,15 @@ root.get('/:clientId', function (req, res, next) {
 		if (err) {
 			next(err);
 		} else {
-			res.json({
-				name: result_ACL.name,
-				clientId: result_ACL.clientId,
-				roles: result_ACL.roles,
+			async.map(result_ACL.roles, function (rolename, callback) {
+				callback(null, {name: rolename});
+			}, function (err, results) {
+				res.json({
+					name: result_ACL.name,
+					clientId: result_ACL.clientId,
+					roles: results
+				});
 			});
-		}
-	});
-});
-
-root.put('/:clientId/name', function (req, res, next) {
-	// 更名ACL
-	ACL.rename(req.params.clientId, req.body.name, function (err) {
-		if (err) {
-			next(err);
-		} else {
-			res.sendStatus(200);
 		}
 	});
 });
@@ -77,7 +71,7 @@ root.get('/:clientId/entry', function (req, res, next) {
 			next(err);
 		} else {
 			res.json({
-				entries: results
+				entry: results
 			});
 		}
 	});
@@ -111,7 +105,12 @@ root.get('/:clientId/entry/:name', function (req, res, next) {
 		if (err) {
 			next(err);
 		} else {
-			res.json(result);
+			async.map(result.roles, function (rolename, callback) {
+				callback(null, rolename);
+			}, function (err, results) {
+				result.roles = results;
+				res.json(result);
+			});
 		}
 	});
 });

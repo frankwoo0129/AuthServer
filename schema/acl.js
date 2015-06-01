@@ -39,34 +39,12 @@ var getACL = function (clientId, callback) {
 			callback(err);
 		} else if (!result) {
 			callback({
-				message: 'no ACL when getACL',
+				debug: 'no ACL when getACL',
+				message: 'no this clientId ACL',
 				status: 404
 			});
 		} else {
 			callback(null, result);
-		}
-	});
-};
-
-var rename = function (clientId, name, callback) {
-	ACL.findOneAndUpdate({
-		clientId: clientId
-	}, {
-		$set: {
-			name: name
-		}
-	}, {
-		new: true
-	}, function (err, result) {
-		if (err) {
-			callback(err);
-		} else if (!result) {
-			callback({
-				message: 'no ACL when rename',
-				status: 404
-			});
-		} else {
-			callback();
 		}
 	});
 };
@@ -93,6 +71,12 @@ var addRole = function (clientId, rolename, callback) {
 	}, function (err, result) {
 		if (err) {
 			callback(err);
+		} else if (!result) {
+			callback({
+				debug: '',
+				message: 'No change when addRole',
+				status: 400
+			});
 		} else {
 			callback();
 		}
@@ -111,6 +95,12 @@ var deleteRole = function (clientId, rolename, callback) {
 	}, function (err, result) {
 		if (err) {
 			callback(err);
+		} else if (!result) {
+			callback({
+				debug: '',
+				message: 'No change when deleteRole',
+				status: 400
+			});
 		} else {
 			callback();
 		}
@@ -132,6 +122,12 @@ var renameRole = function (clientId, oldname, newname, callback) {
 	}, function (err, result) {
 		if (err) {
 			callback(err);
+		} else if (!result) {
+			callback({
+				debug: '',
+				message: 'No change when renameRole',
+				status: 400
+			});
 		} else {
 			callback();
 		}

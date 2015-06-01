@@ -105,7 +105,10 @@ var enableRole = function (clientId, name, role, callback) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
-			callback({});
+			callback({
+				message: '',
+				status: 400
+			});
 		} else {
 			callback();
 		}
@@ -124,7 +127,10 @@ var disableRole = function (clientId, name, role, callback) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
-			callback({});
+			callback({
+				message: '',
+				status: 400
+			});
 		} else {
 			callback();
 		}
@@ -161,7 +167,10 @@ var getEntry = function (clientId, name, callback) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
-			callback({});
+			callback({
+				message: 'No this entry',
+				status: 404
+			});
 		} else {
 			callback(null, result);
 		}
