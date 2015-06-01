@@ -8,7 +8,6 @@ var root = require('express').Router();
 var User = require('../schema/user');
 
 root.get('/profile', function (req, res, next) {
-	var ret = {};
 	if (typeof req.query.user === 'string') {
 		User.getUserConfigure(req.query.user, function (err, result) {
 			if (err) {

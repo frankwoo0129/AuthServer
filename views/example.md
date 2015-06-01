@@ -1,18 +1,18 @@
 取得token的方式：
 
 you should POST to /token
-You should include your client credentials in the Authorization header ("Basic " + client_id:client_secret base64'd),
-and then grant_type ("password"),
-user and password in the request body.
+You should include your client credentials in the Authorization header ("Basic " + client_id:client_secret base64'd),  
+and then grant_type ("password"),  
+user and password in the request body.  
 
 Example:
 
-appId = 9b694d431bfcfb5f52eb04e119413bc5
-deviceId = 1e235754ac9878d99b14bffedbfd69c7
-組成
-9b694d431bfcfb5f52eb04e119413bc5:1e235754ac9878d99b14bffedbfd69c7
-再轉成base64的格式成為
-OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTNiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=
+appId = 9b694d431bfcfb5f52eb04e119413bc5  
+deviceId = 1e235754ac9878d99b14bffedbfd69c7  
+組成  
+9b694d431bfcfb5f52eb04e119413bc5:1e235754ac9878d99b14bffedbfd69c7  
+再轉成base64的格式成為  
+OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTNiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=  
 
 ```
 POST /oauth/token HTTP/1.1

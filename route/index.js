@@ -14,7 +14,7 @@ var client = require('./client');
 //root.post('/auth', checkClient, auth);
 root.get('/oauth/token', token.getToken);
 root.post('/oauth/token', token.postToGetToken);
-root.use('/', account);
+root.use('/account', account);
 root.use('/device', device);
 root.use('/client', client);
 

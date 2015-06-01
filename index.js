@@ -34,7 +34,6 @@ app.use(function (err, req, res, next) {
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
-app.use(route);
 
 app.get('/', function (req, res) {
 	res.render('demo');
@@ -81,6 +80,8 @@ app.get('/test', function (req, res, next) {
 });
 
 app.use(express.static(path.join(__dirname, './dist')));
+
+app.use(route);
 
 app.use(function (req, res, next) {
 	next({
