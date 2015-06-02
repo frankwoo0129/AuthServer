@@ -1,0 +1,29 @@
+[
+	{
+		clientId: 'ABCDEFGHIJKL',
+		name: 'app01',
+		version: '1.0.0',
+		os: 'android',
+		type: 'mobile',
+		expired: false
+	}, {
+		clientId: 'abcdefghijkl',
+		name: 'app02',
+		version: '1.0.0',
+		type: 'web',
+		expired: false
+	}, {
+		clientId: 'lkjihgfedcba',
+		name: 'app03',
+		version: '1.0.0',
+		type: 'task',
+		expired: false
+	}, {
+		clientId: 'LKJIHGFEDCBA',
+		name: 'app04',
+		version: '1.0.0',
+		os: 'ios',
+		type: 'mobile',
+		expired: false
+	}
+]

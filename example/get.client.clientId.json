@@ -1,0 +1,9 @@
+
+{
+	clientId: 'ABCDEFGHIJKL',
+	name: 'app01',
+	version: '1.0.0',
+	os: 'android',
+	type: 'mobile',
+	expired: false
+}

@@ -1,0 +1,11 @@
+{
+	name: 'app01',
+	clientId: 'ABCDEFGHIJKL',
+	roles: [{
+		name: 'role1'
+	}, {
+		name: 'role2'
+	}, {
+		name: 'role3'
+	}]
+}

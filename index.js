@@ -19,11 +19,11 @@ var route = require('./route');
 app.set('view engine', 'html');
 app.engine('html', hbs.__express);
 app.use(cookieParser());
-//app.use(cookieSession({
-//	name: 'SSID',
-//	secret: 'CNSBG_AUTHSERVER_20150303',
-//	signed: false
-//}));
+app.use(cookieSession({
+	name: 'SSID',
+	secret: 'CNSBG_AUTHSERVER_20150303',
+	signed: false
+}));
 app.use(bodyParser.json());
 app.use(function (err, req, res, next) {
 	console.log(err.stack);
@@ -36,6 +36,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/', function (req, res) {
+	req.session.test = 1;
 	res.render('demo');
 });
 
@@ -52,6 +53,17 @@ app.get('/example', function (req, res) {
 
 app.get('/api', function (req, res) {
 	var path = __dirname + '/views/API_BY_Frank.md';
+	fs.readFile(path, 'utf8', function (err, data) {
+		if (err) {
+			res.sendStatus(404);
+		} else {
+			res.render('markdown', {body: marked(data.toString())});
+		}
+	});
+});
+
+app.get('/api/:id', function (req, res) {
+	var path = __dirname + '/views/api/' + req.params.id + '.md';
 	fs.readFile(path, 'utf8', function (err, data) {
 		if (err) {
 			res.sendStatus(404);
@@ -91,13 +103,14 @@ app.use(function (req, res, next) {
 });
 
 app.use(function (err, req, res, next) {
+	console.log(err);
 	if (err.status) {
 		res.status(err.status).json({
 			message: err.message,
 			debug: err.debug
 		});
 	} else {
-		console.log(err);
+		console.log(err.stack);
 		res.status(500).json({
 			debug: err.message,
 			message: 'server Error'

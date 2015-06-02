@@ -1,0 +1,26 @@
+{
+	clientId: 'ABCDEFGHIJKL',
+	name: 'entry1',
+	level: '0',
+	roles: [{
+		name: 'role1'
+	}, {
+		name: 'role2'
+	}],
+	members: [
+		{
+			name: 'Frank',
+			type: 'person',
+			org: 'foxconn'
+		}, {
+			name: 'MIS',
+			type: 'group',
+			org: 'foxconn'
+		}, {
+			name: 'MIS',
+			type: 'group',
+			org: 'CBT'
+		}
+	],
+	description: 'Test ACLEntry'
+}

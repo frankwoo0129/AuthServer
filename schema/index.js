@@ -9,7 +9,7 @@ mongoose.connection.on('error', function (err) {
 	process.exit();
 });
 
-module.exports.Client = require('./client').Cient;
+module.exports.Client = require('./client').Client;
 module.exports.Device = require('./device').Device;
 module.exports.User = require('./user').User;
 module.exports.GrantToken = require('./granttoken');

@@ -83,7 +83,12 @@ var getUserId = function (user, org, callback) {
 		user: user,
 		org: org
 	};
-	User.findOne(query, function (err, result) {
+	User.findOne(query,  {
+		id: true,
+		user: true,
+		org: true,
+		"_id": false
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
@@ -93,20 +98,27 @@ var getUserId = function (user, org, callback) {
 				status: 404
 			});
 		} else {
-			callback(null, {
-				id: result.id,
-				user: result.user,
-				org: result.org
-			});
+			callback(null, result);
 		}
 	});
+};
+
+var getUserIdByOrg = function (org) {
+	return function (user, callback) {
+		getUserId(user, org, callback);
+	};
 };
 
 var getUser = function (userId, callback) {
 	var query = {
 		id: userId
 	};
-	User.findOne(query, function (err, result) {
+	User.findOne(query, {
+		id: true,
+		user: true,
+		org: true,
+		"_id": false
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
@@ -116,11 +128,7 @@ var getUser = function (userId, callback) {
 				status: 404
 			});
 		} else {
-			callback(null, {
-				id: result.id,
-				user: result.user,
-				org: result.org
-			});
+			callback(null, result);
 		}
 	});
 };
@@ -171,11 +179,7 @@ var deleteUser = function (userId, callback) {
 				status: 404
 			});
 		} else {
-			callback(null, {
-				id: result.id,
-				user: result.user,
-				org: result.org
-			});
+			callback(null, result);
 		}
 	});
 };
@@ -190,6 +194,8 @@ var changePassword = function (userId, password, newPassword, callback) {
 			password: newPassword,
 			changePassword: false
 		}
+	}, {
+		new: true
 	}, function (err, result) {
 		if (err) {
 			callback(err);
@@ -216,6 +222,8 @@ var resetPassword = function (userId, callback) {
 			password: randomPassword(6),
 			changePassword: true
 		}
+	}, {
+		new: true
 	}, function (err, result) {
 		if (err) {
 			callback(err);
@@ -235,10 +243,28 @@ var resetPassword = function (userId, callback) {
 };
 
 var getUserConfigure = function (userId, callback) {
-	var query = {
-		id: userId
-	};
-	User.findOne(query, function (err, result) {
+	var query;
+	if (typeof userId === 'object') {
+		query = userId;
+	} else if (typeof userId === 'string') {
+		query = {
+			id: userId
+		};
+	} else {
+		callback({
+			message: 'no userId when getUserConfigure',
+			status: 400
+		});
+	}
+	User.findOne(query, {
+		id: true,
+		user: true,
+		org: true,
+		email: true,
+		mobile_phone: true,
+		work_phone: true,
+		"_id": false
+	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
@@ -272,7 +298,7 @@ var setUserConfigure = function (userId, config, callback) {
 		change = true;
 	}
 	if (config.mobile_phone) {
-		set.modile_phone = config.mobile_phone;
+		set.mobile_phone = config.mobile_phone;
 		change = true;
 	}
 	if (config.work_phone) {
@@ -317,6 +343,7 @@ module.exports.User = User;
 module.exports.resetPassword = resetPassword;
 module.exports.changePassword = changePassword;
 
+module.exports.getUserIdByOrg = getUserIdByOrg;
 module.exports.getUserId = getUserId;
 module.exports.getUser = getUser;
 module.exports.addUser = addUser;
