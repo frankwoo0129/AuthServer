@@ -6,6 +6,16 @@
 var root = require('express').Router();
 var Client = require('../schema/client');
 
+root.get('/', function (req, res, next) {
+	Client.getAllClient(function (err, results) {
+		if (err) {
+			next(err);
+		} else {
+			res.json(results);
+		}
+	});
+});
+
 root.get('/:clientId', function (req, res, next) {
 	Client.getClient(req.params.clientId, function (err, client) {
 		if (err) {

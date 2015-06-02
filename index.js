@@ -19,11 +19,11 @@ var route = require('./route');
 app.set('view engine', 'html');
 app.engine('html', hbs.__express);
 app.use(cookieParser());
-//app.use(cookieSession({
-//	name: 'SSID',
-//	secret: 'CNSBG_AUTHSERVER_20150303',
-//	signed: false
-//}));
+app.use(cookieSession({
+	name: 'SSID',
+	secret: 'CNSBG_AUTHSERVER_20150303',
+	signed: false
+}));
 app.use(bodyParser.json());
 app.use(function (err, req, res, next) {
 	console.log(err.stack);
@@ -37,6 +37,7 @@ app.use(bodyParser.urlencoded({
 app.use(route);
 
 app.get('/', function (req, res) {
+	req.session.test = 1;
 	res.render('demo');
 });
 
@@ -101,13 +102,13 @@ app.use(function (req, res, next) {
 });
 
 app.use(function (err, req, res, next) {
+	console.log(err);
 	if (err.status) {
 		res.status(err.status).json({
 			message: err.message,
 			debug: err.debug
 		});
 	} else {
-		console.log(err);
 		console.log(err.stack);
 		res.status(500).json({
 			debug: err.message,

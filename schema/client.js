@@ -6,6 +6,9 @@ var mongoose = require('mongoose');
 var md5 = require('../lib/md5');
 var random = require('../lib/util').randomString('abcdefghijklmnopqrstuvwxyz0123456789', 32);
 
+var type = ['web', 'mobile', 'task'];
+var os = ['ios', 'android'];
+
 /*
  *	Main Key:
  *		name
@@ -83,6 +86,24 @@ ClientSchema.path('id').validate(function (value, response) {
 	});
 }, 'Validation of {id} failed');
 
+var getAllClient = function (callback) {
+	Client.find({}, {
+		id: true,
+		name: true,
+		type: true,
+		os: true,
+		version: true,
+		expired: true,
+		"_id": false
+	}, function (err, results) {
+		if (err) {
+			callback(err);
+		} else {
+			callback(null, results);
+		}
+	});
+};
+
 var getClient = function (clientId, callback) {
 	var query = {
 		id: clientId
@@ -93,6 +114,7 @@ var getClient = function (clientId, callback) {
 		type: true,
 		os: true,
 		version: true,
+		expired: true,
 		owner: true,
 		"_id": false
 	}, function (err, result) {
@@ -114,7 +136,7 @@ var addClient = function (name, type, os, version, userId, callback) {
 	var newClient = new Client();
 	newClient.name = name;
 	newClient.type = type;
-	if (type === 'application_web') {
+	if (type === 'web') {
 		newClient.secret = random();
 	}
 	newClient.os = os;
@@ -148,8 +170,8 @@ var deleteClient = function (clientId, callback) {
 			callback(err);
 		} else if (!result) {
 			callback({
-				debug: 'result is Not found when deleteApp, query=' + JSON.stringify(query),
-				message: 'No this app',
+				debug: 'result is Not found when deleteClient, query=' + JSON.stringify(query),
+				message: 'No this client',
 				status: 404
 			});
 		} else {
@@ -165,6 +187,7 @@ var deleteClient = function (clientId, callback) {
 };
 
 module.exports.Client = Client;
+module.exports.getAllClient = getAllClient;
 module.exports.getClient = getClient;
 module.exports.addClient = addClient;
 module.exports.deleteClient = deleteClient;
