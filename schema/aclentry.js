@@ -142,6 +142,7 @@ var getAllEntry = function (clientId, callback) {
 		clientId: clientId
 	}, {
 		name: true,
+		description: true,
 		"_id": false
 	}, function (err, results) {
 		if (err) {

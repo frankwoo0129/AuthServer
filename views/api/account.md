@@ -14,7 +14,6 @@
 
 #### HTTP code
 * __200__ 表示成功
-* __205__ 清除所有系統資料，轉至系統設定畫面
 * __400__ 缺少參數，或參數不正確
 * __500__ 內部伺服器錯誤
 
@@ -33,31 +32,15 @@
 
 #### HTTP code
 * __200__ 表示成功
-* __205__ 清除所有系統資料，轉至系統設定畫面
 * __400__ 缺少參數，或參數不正確
 * __500__ 內部伺服器錯誤
 
 #### Output
 * __message__ 若http code不為2XX，將會傳回錯誤訊息。
 * __id__ 客戶代碼
+* __user__ 客戶名稱(通常是工號)
+* __org__ 公司名稱
 * __password__ 預設密碼
-
-#### Example
-> JSON Format which request GetCustomerID API
->
->		{
->			"user": "802172",
->			"password": "password",
->			"device_id": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvJb60",
->			"app_id": "dQIDAQAB"
->		}
->
-> JSON Format which response from GetCustomerID API
->
->		{
->			"client_id": "8506400952701030",
->			"client_token": "MBHUSO3Fcc-722NJVcopeEfnvd112fdCd_i977hbAcxzpoiIYUdeds-rfvds346fDewrfv="
->		}
 
 ---
 
@@ -76,9 +59,8 @@
 
 #### HTTP code
 * __200__ 表示成功
-* __205__ 清除所有系統資料，轉至系統設定畫面
 * __400__ 缺少參數，或參數不正確
-* __401__ 帳號或密碼錯誤
+* __401__ 認證錯誤
 * __500__ 內部伺服器錯誤
 
 #### Output
@@ -101,9 +83,8 @@
 
 #### HTTP code
 * __200__ 表示成功
-* __205__ 清除所有系統資料，轉至系統設定畫面
 * __400__ 缺少參數，或參數不正確
-* __401__ 帳號或密碼錯誤
+* __401__ 認證錯誤
 * __500__ 內部伺服器錯誤
 
 #### Output
@@ -116,25 +97,34 @@
 * __work_phone__ 辦公室分機
 
 #### Example
-> JSON Format which request ClientConfig API
->
->		{
->			"id": "8506400952701030",
->			"email": "jacky.lee@foxconn.com",
->			"mobile_phone": "0932000000",
->			"work_phone": "5500000"
->		}
->
-> JSON Format which response from ClientConfig API
->
->		{
->			"id": "8506400952701030",
->			"user": "802172",
->			"org": "foxconn",
->			"email": "jacky.lee@foxconn.com",
->			"mobile_phone": "0932000000",
->			"work_phone": "5500000"
->		}
+
+```
+POST /account/profile HTTP/1.1
+Host: 10.63.4.28:8008
+Authorization: Basic OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=
+Content-Type: application/x-www-form-urlencoded
+
+userId=2d71cafc3a42a461b2bf367685353cee&email=frank.cc.su@foxconn.com
+
+```
+
+會得到以下的回傳：
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-store
+Pragma: no-cache
+
+{
+  "id" : "2d71cafc3a42a461b2bf367685353cee",
+  "org" : "foxconn",
+  "user" : "829774",
+  "work_phone" : "5506217",
+  "email" : "frank.cc.su@foxconn.com"
+}
+
+```
 
 ---
 
@@ -164,18 +154,30 @@
 * __message__ 若http code不為2XX，將會傳回錯誤訊息。
 
 #### Example
-> JSON Format which request ChangePassword API
->
->		{
->			"userId": "8506400952701030",
->			"password": "password",
->			"newpassword": "new_password"
->		}
-> JSON Format which response from ChangePassword API
->
->		{
->			"id": "8506400952701030"
->		}
+
+```
+POST /account/profile HTTP/1.1
+Host: 10.63.4.28:8008
+Authorization: Basic OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=
+Content-Type: application/x-www-form-urlencoded
+
+userId=2d71cafc3a42a461b2bf367685353cee&password=password&newpassword=new_password
+
+```
+
+會得到以下的回傳：
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-store
+Pragma: no-cache
+
+{
+  "id" : "2d71cafc3a42a461b2bf367685353cee"
+}
+
+```
 
 ---
 
@@ -203,16 +205,30 @@
 * __message__ 若http code不為2XX，將會傳回錯誤訊息。
 
 #### Example
-> JSON Format which request ResetPassword API
->
->		{
->			"userId": "8506400952701030"
->		}
-> JSON Format which response from ResetPassword API
->
->		{
->			"id": "8506400952701030",
->			"passowrd": "d7cjm9"
->		}
+
+```
+POST /account/profile HTTP/1.1
+Host: 10.63.4.28:8008
+Authorization: Basic OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=
+Content-Type: application/x-www-form-urlencoded
+
+userId=2d71cafc3a42a461b2bf367685353cee
+
+```
+
+會得到以下的回傳：
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-store
+Pragma: no-cache
+
+{
+  "id" : "2d71cafc3a42a461b2bf367685353cee",
+  "password" : "d7cjm9"
+}
+
+```
 
 ---

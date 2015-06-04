@@ -35,7 +35,7 @@
 ```
 POST /oauth/token HTTP/1.1
 Host: 10.63.4.28:8008
-Authorization: Basic OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTNiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=
+Authorization: Basic OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&userId=f74635d55f387df83ba2aad77f734866&password=12345678
@@ -64,7 +64,7 @@ Pragma: no-cache
 ```
 POST /oauth/token HTTP/1.1
 Host: 10.63.4.28:8008
-Authorization: Basic OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTNiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=
+Authorization: Basic OWI2OTRkNDMxYmZjZmI1ZjUyZWIwNGUxMTk0MTiYzU6MWUyMzU3NTRhYzk4NzhkOTliMTRiZmZlZGJmZDY5Yzc=
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=refresh_token&refresh_token=tGzv3JOkF0XG5Qx2TlKWIA
