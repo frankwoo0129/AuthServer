@@ -69,6 +69,31 @@ var removeACLEntry = function (clientId, name, callback) {
 	}, function (err, result) {
 		if (err) {
 			callback(err);
+		} else if (!result) {
+			// TODO
+			callback({});
+		} else {
+			callback();
+		}
+	});
+};
+
+var rename = function (clientId, oldname, newname, callback) {
+	ACLEntry.findOneAndUpdate({
+		clientId: clientId,
+		name: oldname
+	}, {
+		$set: {
+			name: newname
+		}
+	}, {
+		new: true
+	}, function (err, result) {
+		if (err) {
+			callback(err);
+		} else if (!result) {
+			// TODO
+			callback({});
 		} else {
 			callback();
 		}
@@ -97,18 +122,18 @@ var enableRole = function (clientId, name, role, callback) {
 	ACLEntry.findOneAndUpdate({
 		clientId: clientId,
 		name: name
-	}, {$addToSet: {
-		roles: role
-	}}, {
+	}, {
+		$addToSet: {
+			roles: role
+		}
+	}, {
 		new: true
 	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
-			callback({
-				message: '',
-				status: 400
-			});
+			// TODO
+			callback({});
 		} else {
 			callback();
 		}
@@ -119,18 +144,62 @@ var disableRole = function (clientId, name, role, callback) {
 	ACLEntry.findOneAndUpdate({
 		clientId: clientId,
 		name: name
-	}, {$pull: {
-		roles: role
-	}}, {
+	}, {
+		$pull: {
+			roles: role
+		}
+	}, {
 		new: true
 	}, function (err, result) {
 		if (err) {
 			callback(err);
 		} else if (!result) {
-			callback({
-				message: '',
-				status: 400
-			});
+			// TODO
+			callback({});
+		} else {
+			callback();
+		}
+	});
+};
+
+var setLevel = function (clientId, name, level, callback) {
+	ACLEntry.findOneAndUpdate({
+		clientId: clientId,
+		name: name
+	}, {
+		$set: {
+			level: level
+		}
+	}, {
+		new: true
+	}, function (err, result) {
+		if (err) {
+			callback(err);
+		} else if (!result) {
+			// TODO
+			callback({});
+		} else {
+			callback();
+		}
+	});
+};
+
+var setDescription = function (clientId, name, description, callback) {
+	ACLEntry.findOneAndUpdate({
+		clientId: clientId,
+		name: name
+	}, {
+		$set: {
+			description: description
+		}
+	}, {
+		new: true
+	}, function (err, result) {
+		if (err) {
+			callback(err);
+		} else if (!result) {
+			// TODO
+			callback({});
 		} else {
 			callback();
 		}
@@ -159,6 +228,7 @@ var getEntry = function (clientId, name, callback) {
 		name: name
 	}, {
 		"_id": false,
+		clientId: true,
 		name: true,
 		level: true,
 		roles: true,
@@ -176,18 +246,6 @@ var getEntry = function (clientId, name, callback) {
 			callback(null, result);
 		}
 	});
-};
-
-var rename = function (clientId, oldname, newname, callback) {
-	
-};
-
-var setLevel = function (clientId, name, level, callback) {
-	
-};
-
-var setDescription = function (clientId, name, description, callback) {
-	
 };
 
 module.exports.ACLEntry = ACLEntry;

@@ -30,8 +30,8 @@ var getACL = function (clientId, callback) {
 	ACL.findOne({
 		clientId: clientId
 	}, {
-		name: true,
 		clientId: true,
+		name: true,
 		roles: true,
 		"_id": false
 	}, function (err, result) {
