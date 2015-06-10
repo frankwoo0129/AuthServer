@@ -9,6 +9,7 @@ var express = require('express');
 var basicAuth = require('basic-auth');
 var hbs = require('hbs');
 var marked = require('marked');
+var moment = require('moment');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
@@ -103,7 +104,7 @@ app.use(function (req, res, next) {
 });
 
 app.use(function (err, req, res, next) {
-	console.log(err);
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' err: ' + err);
 	if (err.status) {
 		res.status(err.status).json({
 			message: err.message,

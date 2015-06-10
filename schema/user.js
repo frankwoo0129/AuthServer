@@ -31,6 +31,7 @@ var UserSchema = new mongoose.Schema({
 	email: String,
 	mobile_phone: String,
 	work_phone: String,
+	strategy: String,
 	createdAt: {
 		type: Date,
 		default: Date.now,

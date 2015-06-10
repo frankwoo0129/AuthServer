@@ -73,9 +73,8 @@ var addRole = function (clientId, rolename, callback) {
 			callback(err);
 		} else if (!result) {
 			callback({
-				debug: '',
 				message: 'No change when addRole',
-				status: 400
+				status: 200
 			});
 		} else {
 			callback();
@@ -97,10 +96,27 @@ var deleteRole = function (clientId, rolename, callback) {
 			callback(err);
 		} else if (!result) {
 			callback({
-				debug: '',
 				message: 'No change when deleteRole',
-				status: 400
+				status: 200
 			});
+		} else {
+			callback();
+		}
+	});
+};
+
+var deleteAllRole = function (clientId, callback) {
+	ACL.findOneAndUpdate({
+		clientId: clientId
+	}, {
+		$set : {
+			roles: []
+		}
+	}, {
+		new : true
+	}, function (err, result) {
+		if (err) {
+			callback(err);
 		} else {
 			callback();
 		}

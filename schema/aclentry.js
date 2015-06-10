@@ -162,7 +162,7 @@ var disableRole = function (clientId, name, role, callback) {
 	});
 };
 
-var setLevel = function (clientId, name, level, callback) {
+var setEntryLevel = function (clientId, name, level, callback) {
 	ACLEntry.findOneAndUpdate({
 		clientId: clientId,
 		name: name
@@ -184,7 +184,7 @@ var setLevel = function (clientId, name, level, callback) {
 	});
 };
 
-var setDescription = function (clientId, name, description, callback) {
+var setEntryDescription = function (clientId, name, description, callback) {
 	ACLEntry.findOneAndUpdate({
 		clientId: clientId,
 		name: name
