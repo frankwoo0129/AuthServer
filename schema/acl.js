@@ -74,7 +74,7 @@ var addRole = function (clientId, rolename, callback) {
 		} else if (!result) {
 			callback({
 				message: 'No change when addRole',
-				status: 200
+				status: 400
 			});
 		} else {
 			callback();
@@ -97,7 +97,7 @@ var deleteRole = function (clientId, rolename, callback) {
 		} else if (!result) {
 			callback({
 				message: 'No change when deleteRole',
-				status: 200
+				status: 400
 			});
 		} else {
 			callback();
