@@ -6,12 +6,10 @@
 var path = require('path');
 var fs = require('fs');
 var express = require('express');
-var basicAuth = require('basic-auth');
 var hbs = require('hbs');
 var marked = require('marked');
 var moment = require('moment');
 var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var app = express();
 var route = require('./route');
@@ -20,18 +18,7 @@ var route = require('./route');
 app.set('view engine', 'html');
 app.engine('html', hbs.__express);
 app.use(cookieParser());
-app.use(cookieSession({
-	name: 'SSID',
-	secret: 'CNSBG_AUTHSERVER_20150303',
-	signed: false
-}));
 app.use(bodyParser.json());
-app.use(function (err, req, res, next) {
-	console.log(err.stack);
-	res.status(404).json({
-		message: err.message
-	});
-});
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
@@ -74,37 +61,21 @@ app.get('/api/:id', function (req, res) {
 	});
 });
 
-app.get('/test', function (req, res, next) {
-//	var header = req.headers.authorization || '',			// get the header
-//		token = header.split(/\s+/).pop() || '',			// and the encoded auth token
-//		auth = new Buffer(token, 'base64').toString(),		// convert from base64
-//		parts = auth.split(/:/),							// split on colon
-//		username = parts[0],
-//		password = parts[1];
-	var user = basicAuth(req);
-	if (!user) {
-		return next({
-			debug: 'no authorization header',
-			message: 'invalid_request',
-			status: 400
-		});
-	}
-	res.json(user);
-});
-
 app.use(express.static(path.join(__dirname, './dist')));
 
 app.use(route);
 
 app.use(function (req, res, next) {
 	next({
+		debug: 'url: ' + req.url,
 		message: 'invalid_url',
 		status: 404
 	});
 });
 
 app.use(function (err, req, res, next) {
-	console.log(moment().format('YYYY-MM-DD HH:mm:ss') + ' err: ' + err);
+	console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
+	console.log(err);
 	if (err.status) {
 		res.status(err.status).json({
 			message: err.message,
