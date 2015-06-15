@@ -37,7 +37,7 @@ var authenticate = function (username, password, callback) {
 				var ret = parser(chunk);
 				if (!ret.root) {
 					callback({
-						message: 'not xml',
+						message: 'Server Error',
 						status: 500
 					});
 				} else if (ret.root.content === username) {
