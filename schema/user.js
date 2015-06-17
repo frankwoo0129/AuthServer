@@ -288,55 +288,45 @@ var getUserConfigure = function (userId, callback) {
 };
 
 var setUserConfigure = function (userId, config, callback) {
-	var query = {
-		id: userId
-	},
-		set = {},
-		change = false;
-		
+	var set = {},
+		query = {
+			id: userId
+		};
+
 	if (config.email) {
 		set.email = config.email;
-		change = true;
 	}
 	if (config.mobile_phone) {
 		set.mobile_phone = config.mobile_phone;
-		change = true;
 	}
 	if (config.work_phone) {
 		set.work_phone = config.work_phone;
-		change = true;
 	}
-	if (change !== true) {
-		callback({
-			message: 'No change',
-			status: 400
-		});
-	} else {
-		User.findOneAndUpdate(query, {
-			$set: set
-		}, {
-			new: true
-		}, function (err, result) {
-			if (err) {
-				callback(err);
-			} else if (!result) {
-				callback({
-					debug: 'result is Not found when changeConfigure, query=' + JSON.stringify(query),
-					message: 'No this user',
-					status: 404
-				});
-			} else {
-				callback(null, {
-					id: result.id,
-					user: result.user,
-					org: result.org,
-					email: result.email,
-					mobile_phone: result.mobile_phone,
-					work_phone: result.work_phone
-				});
-			}
-		});
-	}
+
+	User.findOneAndUpdate(query, {
+		$set: set
+	}, {
+		new: true
+	}, function (err, result) {
+		if (err) {
+			callback(err);
+		} else if (!result) {
+			callback({
+				debug: 'result is Not found when changeConfigure, query=' + JSON.stringify(query),
+				message: 'No this user',
+				status: 404
+			});
+		} else {
+			callback(null, {
+				id: result.id,
+				user: result.user,
+				org: result.org,
+				email: result.email,
+				mobile_phone: result.mobile_phone,
+				work_phone: result.work_phone
+			});
+		}
+	});
 };
 
 module.exports.User = User;

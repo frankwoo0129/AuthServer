@@ -3,8 +3,6 @@
 'use strict';
 
 var mongoose = require('mongoose');
-var Client = require('./client').Client;
-var User = require('./user').User;
 
 var RefreshTokenSchema = new mongoose.Schema({
 	id: {
@@ -15,10 +13,6 @@ var RefreshTokenSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	clientSecret: {
-		type: String,
-		required: true
-	},
 	userId: {
 		type: String,
 		required: true
@@ -26,10 +20,10 @@ var RefreshTokenSchema = new mongoose.Schema({
 	createdAt: {
 		type: Date,
 		default: Date.now,
-		expires: 60 * 60 * 24
+		expires: 60 * 60 * 24 * 7
 	},
 	expires: {
-		type: Number
+		type: Date
 	}
 });
 
@@ -48,35 +42,5 @@ RefreshTokenSchema.path('id').validate(function (value, response) {
 		}
 	});
 }, 'Validation of {id} failed');
-
-RefreshTokenSchema.path('clientId').validate(function (value, response) {
-	Client.findOne({
-		id: value,
-		expired: false
-	}, function (err, result) {
-		if (err) {
-			response(false);
-		} else if (!result) {
-			response(false);
-		} else {
-			response(true);
-		}
-	});
-}, 'Validation of {clientId} failed');
-
-RefreshTokenSchema.path('userId').validate(function (value, response) {
-	User.findOne({
-		id: value,
-		expired: false
-	}, function (err, result) {
-		if (err) {
-			response(false);
-		} else if (!result) {
-			response(false);
-		} else {
-			response(true);
-		}
-	});
-}, 'Validation of {userId} failed');
 
 module.exports = RefreshToken;
