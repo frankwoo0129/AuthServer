@@ -85,18 +85,4 @@ GrantTokenSchema.path('userId').validate(function (value, response) {
 	});
 }, 'Validation of {userId} failed');
 
-//GrantTokenSchema.pre('save', function (next) {
-//	var self = this;
-//	GrantToken.findOneAndRemove({
-//		clientId: self.clientId,
-//		clientSecret: self.clientSecret
-//	}, function (err, result) {
-//		if (err) {
-//			next(err);
-//		} else {
-//			next();
-//		}
-//	});
-//});
-
 module.exports = GrantToken;

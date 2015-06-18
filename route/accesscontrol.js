@@ -47,7 +47,7 @@ root.route('/:clientId/_role')
 		});
 	}).post(function (req, res, next) {
 		// 新增client角色
-		ACL.addRole(req.params.clientId, req.body.name, function (err) {
+		ACL.addRole(req.params.clientId, req.body.rolename, function (err) {
 			if (err) {
 				next(err);
 			} else {
@@ -99,9 +99,7 @@ root.route('/:clientId/_entry')
 			if (err) {
 				next(err);
 			} else {
-				res.json({
-					entry: results
-				});
+				res.json(results);
 			}
 		});
 	}).post(function (req, res, next) {
@@ -127,7 +125,7 @@ root.route('/:clientId/_entry/:entryname')
 				next(err);
 			} else {
 				async.map(result.roles, function (rolename, callback) {
-					callback(null, rolename);
+					callback(null, {name: rolename});
 				}, function (err, results) {
 					result.roles = results;
 					res.json(result);
