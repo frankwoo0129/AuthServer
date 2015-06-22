@@ -6,7 +6,7 @@
 var moment = require('moment');
 var root = require('express').Router();
 var basicAuth = require('basic-auth');
-var User = require('../schema/user');
+var User = require('../schema/oauth').User;
 var oauth2 = require('../lib/oauth2');
 
 var checkAccessToken = function (req, res, next) {
@@ -33,7 +33,7 @@ var checkAccessToken = function (req, res, next) {
 	oauth2.getAccessToken(matches[1], function (err, accessToken) {
 		if (err) {
 			next(err);
-		} else if (accessToken.expires <= 0) {
+		} else if (accessToken.expires.getTime() < new Date().getTime()) {
 			next({
 				debug: 'token expired',
 				message: 'invalid_token',
@@ -48,50 +48,50 @@ var checkAccessToken = function (req, res, next) {
 	});
 };
 
-var useGrantToken = function (req, res, next) {
-	if (!req.body.grant_token) {
-		next({
-			debug: 'no grant_token',
-			message: 'invalid_request',
-			status: 400
-		});
-	} else if (!req.body.userId) {
-		next({
-			debug: 'no userId',
-			message: 'invalid_request',
-			status: 400
-		});
-	} else {
-		oauth2.getGrantToken(req.body.grant_token, function (err, result) {
-			if (err) {
-				next(err);
-			} else {
-				if (result.clientId !== req.oauth.clientId) {
-					next({
-						debug: 'clientId is NOT paired',
-						message: 'invalid_grant',
-						status: 401
-					});
-				} else if (result.clientSecret !== req.oauth.clientSecret) {
-					next({
-						debug: 'clientSecret is NOT paired',
-						message: 'invalid_grant',
-						status: 401
-					});
-				} else if (result.userId !== req.body.userId) {
-					next({
-						debug: 'userId is NOT paired',
-						message: 'invalid_grant',
-						status: 401
-					});
-				} else {
-					req.oauth.userId = req.body.userId;
-					next();
-				}
-			}
-		});
-	}
-};
+//var useGrantToken = function (req, res, next) {
+//	if (!req.body.grant_token) {
+//		next({
+//			debug: 'no grant_token',
+//			message: 'invalid_request',
+//			status: 400
+//		});
+//	} else if (!req.body.userId) {
+//		next({
+//			debug: 'no userId',
+//			message: 'invalid_request',
+//			status: 400
+//		});
+//	} else {
+//		oauth2.getGrantToken(req.body.grant_token, function (err, result) {
+//			if (err) {
+//				next(err);
+//			} else {
+//				if (result.clientId !== req.oauth.clientId) {
+//					next({
+//						debug: 'clientId is NOT paired',
+//						message: 'invalid_grant',
+//						status: 401
+//					});
+//				} else if (result.clientSecret !== req.oauth.clientSecret) {
+//					next({
+//						debug: 'clientSecret is NOT paired',
+//						message: 'invalid_grant',
+//						status: 401
+//					});
+//				} else if (result.userId !== req.body.userId) {
+//					next({
+//						debug: 'userId is NOT paired',
+//						message: 'invalid_grant',
+//						status: 401
+//					});
+//				} else {
+//					req.oauth.userId = req.body.userId;
+//					next();
+//				}
+//			}
+//		});
+//	}
+//};
 
 var useAuthorizationCode = function (req, res, next) {
 	next({
@@ -132,7 +132,7 @@ var useRefreshToken = function (req, res, next) {
 					message: 'invalid_grant',
 					status: 401
 				});
-			} else if (result.expires <= 0) {
+			} else if (result.expires.getTime() < new Date().getTime()) {
 				next({
 					debug: 'refresh_token expired',
 					message: 'invalid_grant',
@@ -154,7 +154,7 @@ var usePassword = function (req, res, next) {
 			status: 400
 		});
 	} else if (req.body.userId) {
-		oauth2.getUser(req.body.userId, req.body.password, function (err) {
+		oauth2.getUser(req.body.userId, req.body.password, function (err, user) {
 			if (err) {
 				next(err);
 			} else {
@@ -180,7 +180,7 @@ var usePassword = function (req, res, next) {
 				next(err);
 			} else {
 				var userId = result.id;
-				oauth2.getUser(userId, req.body.password, function (err) {
+				oauth2.getUser(userId, req.body.password, function (err, user) {
 					if (err) {
 						next(err);
 					} else {
@@ -244,8 +244,8 @@ var checkGrantTypeAllowed = function (req, res, next) {
 var checkGrantType = function (req, res, next) {
 	if (req.oauth.grant_type === 'password') {
 		usePassword(req, res, next);
-	} else if (req.oauth.grant_type === 'grant_token') {
-		useGrantToken(req, res, next);
+//	} else if (req.oauth.grant_type === 'grant_token') {
+//		useGrantToken(req, res, next);
 	} else if (req.oauth.grant_type === 'refresh_token') {
 		useRefreshToken(req, res, next);
 	} else if (req.oauth.grant_type === 'authorization_code') {

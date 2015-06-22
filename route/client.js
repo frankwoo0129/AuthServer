@@ -4,7 +4,7 @@
 "use strict";
 
 var root = require('express').Router();
-var Client = require('../schema/client');
+var Client = require('../schema/oauth').Client;
 
 root.get('/', function (req, res, next) {
 	Client.getAllClient(function (err, results) {

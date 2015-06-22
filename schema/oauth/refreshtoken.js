@@ -28,12 +28,8 @@ var RefreshTokenSchema = new mongoose.Schema({
 });
 
 module.exports = function (connection) {
-	var RefreshToken = mongoose.model('RefreshToken', RefreshTokenSchema);
-
 	RefreshTokenSchema.path('id').validate(function (value, response) {
-		RefreshToken.findOne({
-			id: value,
-		}, function (err, result) {
+		connection.model('RefreshToken').findOne({id: value}, function (err, result) {
 			if (err) {
 				response(false);
 			} else if (!result) {
@@ -44,5 +40,6 @@ module.exports = function (connection) {
 		});
 	}, 'Validation of {id} failed');
 
+	var RefreshToken = connection.model('RefreshToken', RefreshTokenSchema);
 	return RefreshToken;
 };

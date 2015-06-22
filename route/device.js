@@ -4,7 +4,7 @@
 "use strict";
 
 var root = require('express').Router();
-var Device = require('../schema/device');
+var Device = require('../schema/oauth').Device;
 
 root.get('/:deviceId', function (req, res, next) {
 	Device.getDevice(req.params.deviceId, function (err, device) {

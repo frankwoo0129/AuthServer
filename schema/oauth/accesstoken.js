@@ -28,10 +28,8 @@ var AccessTokenSchema = new mongoose.Schema({
 });
 
 module.exports = function (connection) {
-	var AccessToken = connection.model('AccessToken', AccessTokenSchema);
-
 	AccessTokenSchema.path('id').validate(function (value, response) {
-		AccessToken.findOne({
+		connection.model('AccessToken').findOne({
 			id: value
 		}, function (err, result) {
 			if (err) {
@@ -44,5 +42,6 @@ module.exports = function (connection) {
 		});
 	}, 'Validation of {id} failed');
 
+	var AccessToken = connection.model('AccessToken', AccessTokenSchema);
 	return AccessToken;
 };

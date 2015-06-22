@@ -5,7 +5,7 @@
 
 var async = require('async');
 var root = require('express').Router();
-var User = require('../schema/user');
+var User = require('../schema/oauth').User;
 var checkClient = require('./token').checkClient;
 
 root.get('/profile', function (req, res, next) {
@@ -136,7 +136,7 @@ root.post('/', function (req, res, next) {
 			status: 400
 		});
 	} else {
-		User.addUser(req.body.user, req.body.org, null, function (err, user) {
+		User.addUser(req.body.user, req.body.org, function (err, user) {
 			if (err) {
 				next(err);
 			} else {

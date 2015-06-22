@@ -38,51 +38,21 @@ var GrantTokenSchema = new mongoose.Schema({
 	}
 });
 
-var GrantToken = mongoose.model('GrantToken', GrantTokenSchema);
+module.exports = function (connection) {
+	GrantTokenSchema.path('id').validate(function (value, response) {
+		connection.model('GrantToken').findOne({
+			id: value
+		}, function (err, result) {
+			if (err) {
+				response(false);
+			} else if (!result) {
+				response(true);
+			} else {
+				response(false);
+			}
+		});
+	}, 'Validation of {id} failed');
 
-GrantTokenSchema.path('id').validate(function (value, response) {
-	GrantToken.findOne({
-		id: value
-	}, function (err, result) {
-		if (err) {
-			response(false);
-		} else if (!result) {
-			response(true);
-		} else {
-			response(false);
-		}
-	});
-}, 'Validation of {id} failed');
-
-GrantTokenSchema.path('clientId').validate(function (value, response) {
-	Client.findOne({
-		id: value,
-		expired: false
-	}, function (err, result) {
-		if (err) {
-			response(false);
-		} else if (!result) {
-			response(false);
-		} else {
-			response(true);
-		}
-	});
-}, 'Validation of {clientId} failed');
-
-GrantTokenSchema.path('userId').validate(function (value, response) {
-	var self = this;
-	User.findOne({
-		id: value,
-		expired: false
-	}, function (err, result) {
-		if (err) {
-			response(false);
-		} else if (!result) {
-			response(false);
-		} else {
-			response(true);
-		}
-	});
-}, 'Validation of {userId} failed');
-
-module.exports = GrantToken;
+	var GrantToken = connection.model('GrantToken', GrantTokenSchema);
+	return GrantToken;
+};
