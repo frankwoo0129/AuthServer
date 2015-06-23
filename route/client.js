@@ -48,7 +48,7 @@ root.post('/', function (req, res, next) {
 			status: 400
 		});
 	} else {
-		Client.addClient(req.body.name, req.body.type, req.body.os, req.body.version, 'test', function (err, user) {
+		Client.addClient(req.body.name, req.body.type, req.body.os, req.body.version, function (err, user) {
 			if (err) {
 				next(err);
 			} else {

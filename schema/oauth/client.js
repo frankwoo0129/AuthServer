@@ -31,10 +31,6 @@ var ClientSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	owner: {
-		type: mongoose.Schema.Types.Mixed,
-		required: true
-	},
 	expired: {
 		type: Boolean,
 		default: false
@@ -113,7 +109,6 @@ module.exports = function (connection) {
 			os: true,
 			version: true,
 			expired: true,
-			owner: true,
 			"_id": false
 		}, function (err, result) {
 			if (err) {
@@ -130,7 +125,7 @@ module.exports = function (connection) {
 		});
 	};
 
-	ClientSchema.statics.addClient = function (name, type, os, version, userId, callback) {
+	ClientSchema.statics.addClient = function (name, type, os, version, callback) {
 		ClientSchema.statics.generateId(name, type, os, version, function (err, id) {
 			var Client = connection.model('Client'),
 				newClient = new Client();
@@ -142,7 +137,6 @@ module.exports = function (connection) {
 			newClient.os = os;
 			newClient.version = version;
 			newClient.id = id;
-			newClient.owner = userId;
 
 			newClient.save(function (err) {
 				if (err) {
@@ -153,9 +147,8 @@ module.exports = function (connection) {
 						clientSecret: newClient.secret,
 						name: newClient.name,
 						type: newClient.type,
-						version: newClient.version,
 						os: newClient.os,
-						owner: newClient.owner
+						version: newClient.version
 					});
 				}
 			});

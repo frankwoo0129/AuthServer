@@ -5,31 +5,71 @@
 
 var async = require('async');
 var root = require('express').Router();
-var ACL = require('../schema/acl');
-var ACLEntry = require('../schema/aclentry');
+var ACL = require('../schema/oauth').ACL;
+var ACLEntry = require('../schema/oauth').ACLEntry;
 
-root.get('/', function (req, res) {
-	res.send('Home');
-});
-
-root.get('/:clientId', function (req, res, next) {
-	// 取得ACL詳細資料
-	ACL.getACL(req.params.clientId, function (err, result_ACL) {
-		if (err) {
-			next(err);
-		} else {
-			async.map(result_ACL.roles, function (rolename, callback) {
-				callback(null, {name: rolename});
-			}, function (err, results) {
-				res.json({
-					name: result_ACL.name,
-					clientId: result_ACL.clientId,
-					roles: results
+root.route('/')
+	.get(function (req, res, next) {
+		// 取得所有ACL
+		ACL.getAllACL(req.params.clientId, function (err, results_all_acl) {
+			async.map(results_all_acl, function (acl, callback_outer) {
+				async.map(acl.roles, function (rolename, callback_inner) {
+					callback_inner(null, {name: rolename});
+				}, function (err, results) {
+					callback_outer(null, {
+						name: acl.name,
+						clientId: acl.clientId,
+						roles: results
+					});
 				});
+			}, function (err, results) {
+				res.json(results);
 			});
-		}
+		});
+	}).post(function (req, res, next) {
+		// 新增ACL
+		ACL.createACL(req.body.clientId, req.body.name, function (err) {
+			if (err) {
+				next(err);
+			} else {
+				res.sendStatus(200);
+			}
+		});
 	});
-});
+
+
+root.route('/:clientId')
+	.get(function (req, res, next) {
+		// 取得ACL詳細資料
+		ACL.getACL(req.params.clientId, function (err, result_ACL) {
+			if (err) {
+				next(err);
+			} else {
+				async.map(result_ACL.roles, function (rolename, callback) {
+					callback(null, {name: rolename});
+				}, function (err, results) {
+					res.json({
+						name: result_ACL.name,
+						clientId: result_ACL.clientId,
+						roles: results
+					});
+				});
+			}
+		});
+	}).post(function (req, res, next) {
+		next();
+	}).put(function (req, res, next) {
+		next();
+	}).delete(function (req, res, next) {
+		// 刪除ACL
+		ACL.removeACL(req.params.clientId, function (err) {
+			if (err) {
+				next(err);
+			} else {
+				res.sendStatus(200);
+			}
+		});
+	});
 
 root.route('/:clientId/_role')
 	.get(function (req, res, next) {
@@ -249,6 +289,8 @@ root.put('/:clientId/_entry/:entryname/_description', function (req, res, next) 
 
 root.use(function (req, res, next) {
 	next({
+		method: req.method,
+		url: req.originalUrl,
 		message: 'no this url',
 		status: 404
 	});

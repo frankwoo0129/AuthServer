@@ -33,17 +33,20 @@ var checkAccessToken = function (req, res, next) {
 	oauth2.getAccessToken(matches[1], function (err, accessToken) {
 		if (err) {
 			next(err);
-		} else if (accessToken.expires.getTime() < new Date().getTime()) {
-			next({
-				debug: 'token expired',
-				message: 'invalid_token',
-				status: 401
-			});
 		} else {
-			res.status(200).json({
-				userId: accessToken.userId,
-				expires: accessToken.expires
-			});
+			var expire = (accessToken.expires.getTime() - new Date().getTime()) / 1000;
+			if (expire < 0) {
+				next({
+					debug: 'token expired',
+					message: 'invalid_token',
+					status: 401
+				});
+			} else {
+				res.status(200).json({
+					user: accessToken.user,
+					expires: expire
+				});
+			}
 		}
 	});
 };
@@ -126,12 +129,12 @@ var useRefreshToken = function (req, res, next) {
 					message: 'invalid_grant',
 					status: 401
 				});
-			} else if (result.clientSecret !== req.oauth.clientSecret) {
-				next({
-					debug: 'refresh_token and clientSecret is NOT paired',
-					message: 'invalid_grant',
-					status: 401
-				});
+//			} else if (result.clientSecret !== req.oauth.clientSecret) {
+//				next({
+//					debug: 'refresh_token and clientSecret is NOT paired',
+//					message: 'invalid_grant',
+//					status: 401
+//				});
 			} else if (result.expires.getTime() < new Date().getTime()) {
 				next({
 					debug: 'refresh_token expired',
@@ -139,7 +142,7 @@ var useRefreshToken = function (req, res, next) {
 					status: 401
 				});
 			} else {
-				req.oauth.userId = result.userId;
+				req.oauth.user = result.user;
 				next();
 			}
 		});
@@ -158,7 +161,7 @@ var usePassword = function (req, res, next) {
 			if (err) {
 				next(err);
 			} else {
-				req.oauth.userId = req.body.userId;
+				req.oauth.user = user;
 				next();
 			}
 		});
@@ -184,7 +187,7 @@ var usePassword = function (req, res, next) {
 					if (err) {
 						next(err);
 					} else {
-						req.oauth.userId = userId;
+						req.oauth.user = user;
 						next();
 					}
 				});
@@ -262,13 +265,17 @@ var checkGrantType = function (req, res, next) {
 };
 
 var sendAccessToken = function (req, res, next) {
-	oauth2.saveAccessToken(req.oauth.clientId, req.oauth.clientSecret, 3600, req.oauth.userId, function (err, accessToken) {
-		if (err) {
-			next(err);
-		} else {
-			req.oauth.access_token = accessToken;
-			next();
-		}
+	oauth2.generateToken('accessToken', req, function (err, id) {
+		var date = new Date();
+		date.setSeconds(date.getSeconds() + 3600);
+		oauth2.saveAccessToken(id, req.oauth.clientId, date, req.oauth.user, function (err) {
+			if (err) {
+				next(err);
+			} else {
+				req.oauth.access_token = id;
+				next();
+			}
+		});
 	});
 };
 
@@ -276,13 +283,17 @@ var sendRefreshToken = function (req, res, next) {
 	if (req.oauth.grant_type === 'refresh_token') {
 		next();
 	} else {
-		oauth2.saveRefreshToken(req.oauth.clientId, req.oauth.clientSecret, 86400, req.oauth.userId, function (err, refreshToken) {
-			if (err) {
-				next(err);
-			} else {
-				req.oauth.refresh_token = refreshToken;
-				next();
-			}
+		var date = new Date();
+		date.setSeconds(date.getSeconds() + 86400);
+		oauth2.generateToken('refreshToken', req, function (err, id) {
+			oauth2.saveRefreshToken(id, req.oauth.clientId, date, req.oauth.user, function (err) {
+				if (err) {
+					next(err);
+				} else {
+					req.oauth.refresh_token = id;
+					next();
+				}
+			});
 		});
 	}
 };
@@ -295,7 +306,7 @@ var sendResponse = function (req, res, next) {
 	}
 	
 	if (req.oauth.access_token) {
-		ret.userId = req.oauth.userId;
+		ret.user = req.oauth.user;
 		ret.access_token = req.oauth.access_token;
 		ret.token_type = 'Bearer';
 		ret.expires_in = 3600;

@@ -67,8 +67,9 @@ app.use(route);
 
 app.use(function (req, res, next) {
 	next({
-		debug: 'url: ' + req.url,
-		message: 'invalid_url',
+		method: req.method,
+		url: req.originalUrl,
+		message: 'no this url',
 		status: 404
 	});
 });

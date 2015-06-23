@@ -28,7 +28,7 @@ var authenticate = function (username, password, callback) {
 	req = http.request(options, function (res) {
 		if (res.statusCode !== 200) {
 			callback({
-				message: 'server error',
+				message: 'custom auth server error',
 				status: 500
 			});
 		} else {
@@ -37,7 +37,7 @@ var authenticate = function (username, password, callback) {
 				var ret = parser(chunk);
 				if (!ret.root) {
 					callback({
-						message: 'Server Error',
+						message: 'custom auth server error',
 						status: 500
 					});
 				} else if (ret.root.content === username) {

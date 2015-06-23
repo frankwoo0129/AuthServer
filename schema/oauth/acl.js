@@ -23,129 +23,199 @@ var ACLSchema = new mongoose.Schema({
 	}
 });
 
+module.exports = function (connection) {
+	ACLSchema.statics.createACL = function (clientId, name, callback) {
+		connection.model('ACL').findOne({
+			clientId: clientId
+		}, function (err, result) {
+			if (err) {
+				callback(err);
+			} else if (result) {
+				callback({
+					debug: 'when createACL',
+					message: 'this clientId ACL is exists',
+					status: 404
+				});
+			} else {
+				var ACL = connection.model('ACL'),
+					acl = new ACL();
 
-var ACL = mongoose.model('ACL', ACLSchema);
+				acl.clientId = clientId;
+				acl.name = name;
+				acl.save(function (err) {
+					if (err) {
+						callback(err);
+					} else {
+						callback();
+					}
+				});
+			}
+		});
+	};
 
-var getACL = function (clientId, callback) {
-	ACL.findOne({
-		clientId: clientId
-	}, {
-		clientId: true,
-		name: true,
-		roles: true,
-		"_id": false
-	}, function (err, result) {
-		if (err) {
-			callback(err);
-		} else if (!result) {
-			callback({
-				debug: 'no ACL when getACL',
-				message: 'no this clientId ACL',
-				status: 404
-			});
-		} else {
-			callback(null, result);
-		}
-	});
-};
+	ACLSchema.statics.removeACL = function (clientId, callback) {
+		connection.model('ACL').findOne({
+			clientId: clientId
+		}, function (err, result) {
+			if (err) {
+				callback(err);
+			} else if (!result) {
+				callback({
+					debug: 'no ACL when removeACL',
+					message: 'no this clientId ACL',
+					status: 404
+				});
+			} else {
+				result.remove(function (err) {
+					if (err) {
+						callback(err);
+					} else {
+						callback();
+					}
+				});
+			}
+		});
+	};
 
-var getRoles = function (clientId, callback) {
-	getACL(clientId, function (err, result) {
-		if (err) {
-			callback(err);
-		} else {
-			callback(null, result.roles);
-		}
-	});
-};
+	ACLSchema.statics.getAllACL = function (callback) {
+		connection.model('ACL').find({}, {
+			clientId: true,
+			name: true,
+			roles: true,
+			"_id": false
+		}, function (err, results) {
+			if (err) {
+				callback(err);
+			} else {
+				callback(null, results);
+			}
+		});
+	};
 
-var addRole = function (clientId, rolename, callback) {
-	ACL.findOneAndUpdate({
-		clientId: clientId
-	}, {
-		$addToSet: {
-			roles: rolename
-		}
-	}, {
-		new: true
-	}, function (err, result) {
-		if (err) {
-			callback(err);
-		} else if (!result) {
-			callback({
-				message: 'No change when addRole',
-				status: 400
-			});
-		} else {
-			callback();
-		}
-	});
-};
+	ACLSchema.statics.getACL = function (clientId, callback) {
+		connection.model('ACL').findOne({
+			clientId: clientId
+		}, {
+			clientId: true,
+			name: true,
+			roles: true,
+			"_id": false
+		}, function (err, result) {
+			if (err) {
+				callback(err);
+			} else if (!result) {
+				callback({
+					debug: 'no ACL when getACL',
+					message: 'no this clientId ACL',
+					status: 404
+				});
+			} else {
+				callback(null, result);
+			}
+		});
+	};
 
-var deleteRole = function (clientId, rolename, callback) {
-	ACL.findOneAndUpdate({
-		clientId: clientId
-	}, {
-		$pull: {
-			roles: rolename
-		}
-	}, {
-		new: true
-	}, function (err, result) {
-		if (err) {
-			callback(err);
-		} else if (!result) {
-			callback({
-				message: 'No change when deleteRole',
-				status: 400
-			});
-		} else {
-			callback();
-		}
-	});
-};
+	ACLSchema.statics.getRoles = function (clientId, callback) {
+		ACLSchema.statics.getACL(clientId, function (err, result) {
+			if (err) {
+				callback(err);
+			} else {
+				callback(null, result.roles);
+			}
+		});
+	};
 
-var deleteAllRole = function (clientId, callback) {
-	ACL.findOneAndUpdate({
-		clientId: clientId
-	}, {
-		$set : {
-			roles: []
-		}
-	}, {
-		new : true
-	}, function (err, result) {
-		if (err) {
-			callback(err);
-		} else {
-			callback();
-		}
-	});
-};
+	ACLSchema.statics.addRole = function (clientId, rolename, callback) {
+		connection.model('ACL').findOneAndUpdate({
+			clientId: clientId
+		}, {
+			$addToSet: {
+				roles: rolename
+			}
+		}, {
+			new: true
+		}, function (err, result) {
+			if (err) {
+				callback(err);
+			} else if (!result) {
+				callback({
+					message: 'No change when addRole',
+					status: 400
+				});
+			} else {
+				callback();
+			}
+		});
+	};
 
-var renameRole = function (clientId, oldname, newname, callback) {
-	ACL.findOneAndUpdate({
-		clientId: clientId,
-		roles: {
-			$in: [oldname]
-		}
-	}, {
-		$set: {
-			"roles.$": newname
-		}
-	}, {
-		new: true
-	}, function (err, result) {
-		if (err) {
-			callback(err);
-		} else if (!result) {
-			callback({
-				debug: '',
-				message: 'No change when renameRole',
-				status: 400
-			});
-		} else {
-			callback();
-		}
-	});
+	ACLSchema.statics.deleteRole = function (clientId, rolename, callback) {
+		connection.model('ACL').findOneAndUpdate({
+			clientId: clientId
+		}, {
+			$pull: {
+				roles: rolename
+			}
+		}, {
+			new: true
+		}, function (err, result) {
+			if (err) {
+				callback(err);
+			} else if (!result) {
+				callback({
+					message: 'No change when deleteRole',
+					status: 400
+				});
+			} else {
+				callback();
+			}
+		});
+	};
+
+	ACLSchema.statics.deleteAllRole = function (clientId, callback) {
+		connection.model('ACL').findOneAndUpdate({
+			clientId: clientId
+		}, {
+			$set : {
+				roles: []
+			}
+		}, {
+			new : true
+		}, function (err, result) {
+			if (err) {
+				callback(err);
+			} else {
+				callback();
+			}
+		});
+	};
+
+	ACLSchema.statics.renameRole = function (clientId, oldname, newname, callback) {
+		connection.model('ACL').findOneAndUpdate({
+			clientId: clientId,
+			roles: {
+				$in: [oldname]
+			}
+		}, {
+			$set: {
+				"roles.$": newname
+			}
+		}, {
+			new: true
+		}, function (err, result) {
+			if (err) {
+				callback(err);
+			} else if (!result) {
+				callback({
+					debug: '',
+					message: 'No change when renameRole',
+					status: 400
+				});
+			} else {
+				callback();
+			}
+		});
+	};
+
+	var ACL = connection.model('ACL', ACLSchema);
+	return ACL;
 };
