@@ -11,7 +11,7 @@ var ACLEntry = require('../schema/oauth').ACLEntry;
 root.route('/')
 	.get(function (req, res, next) {
 		// 取得所有ACL
-		ACL.getAllACL(req.params.clientId, function (err, results_all_acl) {
+		ACL.getAllACL(function (err, results_all_acl) {
 			async.map(results_all_acl, function (acl, callback_outer) {
 				async.map(acl.roles, function (rolename, callback_inner) {
 					callback_inner(null, {name: rolename});
@@ -295,3 +295,5 @@ root.use(function (req, res, next) {
 		status: 404
 	});
 });
+
+module.exports = root;

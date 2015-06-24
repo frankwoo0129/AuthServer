@@ -3,6 +3,7 @@
 'use strict';
 
 var mongoose = require('mongoose');
+var async = require('async');
 
 var ACLSchema = new mongoose.Schema({
 	name: {
@@ -46,7 +47,11 @@ module.exports = function (connection) {
 					if (err) {
 						callback(err);
 					} else {
-						callback();
+						callback(null, {
+							name: acl.name,
+							clientId: acl.clientId,
+							roles: acl.roles
+						});
 					}
 				});
 			}
@@ -104,10 +109,18 @@ module.exports = function (connection) {
 			if (err) {
 				callback(err);
 			} else if (!result) {
-				callback({
-					debug: 'no ACL when getACL',
-					message: 'no this clientId ACL',
-					status: 404
+				connection.model('Client').findOne({id: clientId}, function (err, result_client) {
+					if (err) {
+						callback(err);
+					} else if (!result_client) {
+						callback({
+							debug: 'no ACL when getACL',
+							message: 'no this clientId',
+							status: 404
+						});
+					} else {
+						ACLSchema.statics.createACL(result_client.id, result_client.name, callback);
+					}
 				});
 			} else {
 				callback(null, result);
