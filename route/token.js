@@ -42,10 +42,8 @@ var checkAccessToken = function (req, res, next) {
 					status: 401
 				});
 			} else {
-				res.status(200).json({
-					user: accessToken.user,
-					expires: expire
-				});
+				req.accessToken = accessToken;
+				next();
 			}
 		}
 	});
