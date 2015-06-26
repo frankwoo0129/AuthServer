@@ -9,6 +9,18 @@ var ACL = require('../schema/oauth').ACL;
 var ACLEntry = require('../schema/oauth').ACLEntry;
 
 root.route('/')
+	/**
+	 * @api {get} / Get ACL List
+	 * @apiName getAllACL
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 *
+	 * @apiSuccess {Object[]} acls List of ACL.
+	 * @apiSuccess {String} acls.name Name.
+	 * @apiSuccess {String} acls.clientId ClientId.
+	 * @apiSuccess {Object[]} acls.roles Roles
+	 */
 	.get(function (req, res, next) {
 		// 取得所有ACL
 		ACL.getAllACL(function (err, results_all_acl) {
@@ -26,6 +38,14 @@ root.route('/')
 				res.json(results);
 			});
 		});
+	/**
+	 * @api {post} / Create ACL
+	 * @apiName createACL
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 *
+	 */
 	}).post(function (req, res, next) {
 		// 新增ACL
 		ACL.createACL(req.body.clientId, req.body.name, function (err) {

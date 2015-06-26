@@ -24,7 +24,6 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/', function (req, res) {
-	req.session.test = 1;
 	res.render('demo');
 });
 
@@ -38,6 +37,8 @@ app.get('/example', function (req, res) {
 		}
 	});
 });
+
+app.use('/test', express.static(path.join(__dirname, './apidoc')));
 
 app.get('/api', function (req, res) {
 	var path = __dirname + '/views/API_BY_Frank.md';
@@ -75,6 +76,7 @@ app.use(function (req, res, next) {
 });
 
 app.use(function (err, req, res, next) {
+	console.log('Url: ' + req.originalUrl);
 	console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
 	console.log(err);
 	if (err.status) {
