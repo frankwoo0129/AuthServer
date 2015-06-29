@@ -33,6 +33,12 @@ var checkAccessToken = function (req, res, next) {
 	oauth2.getAccessToken(matches[1], function (err, accessToken) {
 		if (err) {
 			next(err);
+		} else if (!accessToken) {
+			next({
+				debug: 'no this token',
+				message: 'invalid_token',
+				status: 401
+			});
 		} else {
 			var expire = (accessToken.expires.getTime() - new Date().getTime()) / 1000;
 			if (expire < 0) {

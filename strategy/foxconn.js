@@ -36,6 +36,7 @@ var authenticate = function (username, password, callback) {
 			res.on('data', function (chunk) {
 				var ret = parser(chunk);
 				if (!ret.root) {
+					console.log(chunk);
 					callback({
 						message: 'custom auth server error',
 						status: 500
@@ -43,6 +44,7 @@ var authenticate = function (username, password, callback) {
 				} else if (ret.root.content === username) {
 					callback(null, true);
 				} else {
+					console.log(chunk);
 					callback(null, false);
 				}
 			});
