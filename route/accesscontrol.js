@@ -20,6 +20,7 @@ root.route('/')
 	 * @apiSuccess {String} acls.name Name.
 	 * @apiSuccess {String} acls.clientId ClientId.
 	 * @apiSuccess {Object[]} acls.roles Roles
+	 * @apiSuccess {String} acls.roles.name Rolename
 	 */
 	.get(function (req, res, next) {
 		// 取得所有ACL
@@ -44,6 +45,8 @@ root.route('/')
 	 * @apiGroup ACL
 	 *
 	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 * @apiParam {String} name
 	 *
 	 */
 	}).post(function (req, res, next) {
@@ -59,6 +62,19 @@ root.route('/')
 
 
 root.route('/:clientId')
+	/**
+	 * @api {get} /:clientId Get ACL Info
+	 * @apiName getACL
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 *
+	 * @apiSuccess {String} name Client Name.
+	 * @apiSuccess {String} clientId Client ID.
+	 * @apiSuccess {Object[]} roles Roles
+	 * @apiSuccess {String} roles.name Rolename
+	 */
 	.get(function (req, res, next) {
 		// 取得ACL詳細資料
 		ACL.getACL(req.params.clientId, function (err, result_ACL) {
@@ -80,6 +96,14 @@ root.route('/:clientId')
 		next();
 	}).put(function (req, res, next) {
 		next();
+	/**
+	 * @api {delete} /:clientId Delete ACL
+	 * @apiName removeACL
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 */
 	}).delete(function (req, res, next) {
 		// 刪除ACL
 		ACL.removeACL(req.params.clientId, function (err) {
@@ -92,6 +116,17 @@ root.route('/:clientId')
 	});
 
 root.route('/:clientId/_role')
+	/**
+	 * @api {get} /:clientId/_role Get ACL Roles
+	 * @apiName getACLRoles
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 *
+	 * @apiSuccess {Object[]} roles Roles
+	 * @apiSuccess {String} roles.name Rolename
+	 */
 	.get(function (req, res, next) {
 		// 取得所有角色
 		ACL.getACL(req.params.clientId, function (err, result_ACL) {
@@ -105,6 +140,15 @@ root.route('/:clientId/_role')
 				});
 			}
 		});
+	/**
+	 * @api {post} /:clientId/_role Add ACL Role
+	 * @apiName addRole
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 * @apiParam {String} rolename
+	 */
 	}).post(function (req, res, next) {
 		// 新增client角色
 		ACL.addRole(req.params.clientId, req.body.rolename, function (err) {
@@ -116,6 +160,14 @@ root.route('/:clientId/_role')
 		});
 	}).put(function (req, res, next) {
 		next();
+	/**
+	 * @api {delete} /:clientId/_role Delete All ACL Roles
+	 * @apiName deleteAllRole
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 */
 	}).delete(function (req, res, next) {
 		// 刪除所有角色
 		ACL.deleteAllRole(req.params.clientId, function (err) {
@@ -132,6 +184,16 @@ root.route('/:clientId/_role/:rolename')
 		next();
 	}).post(function (req, res, next) {
 		next();
+	/**
+	 * @api {put} /:clientId/_role/:rolename Change ACL Rolename
+	 * @apiName renameRole
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 * @apiParam {String} rolename
+	 * @apiParam {String} rolename
+	 */
 	}).put(function (req, res, next) {
 		// 更名client角色
 		ACL.renameRole(req.params.clientId, req.params.rolename, req.body.rolename, function (err) {
@@ -141,6 +203,15 @@ root.route('/:clientId/_role/:rolename')
 				res.sendStatus(200);
 			}
 		});
+	/**
+	 * @api {delete} /:clientId/_role/:rolename Delete ACL role
+	 * @apiName deleteRole
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 * @apiParam {String} rolename
+	 */
 	}).delete(function (req, res, next) {
 		// 刪除client角色
 		ACL.deleteRole(req.params.clientId, req.params.rolename, function (err) {
@@ -153,6 +224,18 @@ root.route('/:clientId/_role/:rolename')
 	});
 
 root.route('/:clientId/_entry')
+	/**
+	 * @api {get} /:clientId/_entry Get All ACL Entries
+	 * @apiName getAllEntry
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 *
+	 * @apiSuccess {Object[]} entries Entries
+	 * @apiSuccess {String} entries.name Entry name
+	 * @apiSuccess {String} entries.description Entry description
+	 */
 	.get(function (req, res, next) {
 		// 取得client ACLEntry 所有names
 		ACLEntry.getAllEntry(req.params.clientId, function (err, results) {
@@ -162,6 +245,15 @@ root.route('/:clientId/_entry')
 				res.json(results);
 			}
 		});
+	/**
+	 * @api {post} /:clientId/_entry Create ACL Entry
+	 * @apiName createACLEntry
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 * @apiParam {String} name
+	 */
 	}).post(function (req, res, next) {
 		// 新增一個client ACLEntry
 		ACLEntry.createACLEntry(req.params.clientId, req.body.name, function (err) {
@@ -178,6 +270,26 @@ root.route('/:clientId/_entry')
 	});
 
 root.route('/:clientId/_entry/:entryname')
+	/**
+	 * @api {get} /:clientId/_entry/:entryname Get ACL Entry Info
+	 * @apiName getEntry
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 * @apiParam {String} entryname
+	 *
+	 * @apiSuccess {String} clientId Client ID
+	 * @apiSuccess {String} name Entry name
+	 * @apiSuccess {String} level Entry Level
+	 * @apiSuccess {Object[]} roles Entry Roles
+	 * @apiSuccess {String} roles.name Rolename
+	 * @apiSuccess {Object[]} members Entry Members
+	 * @apiSuccess {String} members.name
+	 * @apiSuccess {String} members.org
+	 * @apiSuccess {String} members.type
+	 * @apiSuccess {String} description Entry description
+	 */
 	.get(function (req, res, next) {
 		// 取得client ACLEntry 詳細資料
 		ACLEntry.getEntry(req.params.clientId, req.params.entryname, function (err, result) {
@@ -196,6 +308,15 @@ root.route('/:clientId/_entry/:entryname')
 		next();
 	}).put(function (req, res, next) {
 		next();
+	/**
+	 * @api {delete} /:clientId/_entry/:entryname Delete ACL Entry
+	 * @apiName getAllEntry
+	 * @apiGroup ACL
+	 *
+	 * @apiHeader {String} authorization Access Token.
+	 * @apiParam {String} clientId
+	 * @apiParam {String} entryname
+	 */
 	}).delete(function (req, res, next) {
 		// 刪除一個client ACLEntry
 		ACLEntry.removeACLEntry(req.params.clientId, req.params.entryname, function (err) {

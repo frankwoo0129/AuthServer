@@ -7,7 +7,19 @@ var async = require('async');
 var root = require('express').Router();
 var User = require('../schema/oauth').User;
 
-root.get('/', function (req, res, next) {
+/**
+ * @api {get} /account Get User ID
+ * @apiName getUserId
+ * @apiGroup Account
+ *
+ * @apiParam {String} user
+ * @apiParam {String} org
+ *
+ * @apiSuccess {String} id
+ * @apiSuccess {String} user
+ * @apiSuccess {String} org
+ */
+root.get('/account', function (req, res, next) {
 	if (!req.query.user) {
 		next({
 			message: 'no user',
@@ -29,7 +41,18 @@ root.get('/', function (req, res, next) {
 	}
 });
 
-root.get('/:userId', function (req, res, next) {
+/**
+ * @api {get} /account/:userId Get User
+ * @apiName getUser
+ * @apiGroup Account
+ *
+ * @apiParam {String} userId
+ *
+ * @apiSuccess {String} id
+ * @apiSuccess {String} user
+ * @apiSuccess {String} org
+ */
+root.get('/account/:userId', function (req, res, next) {
 	User.getUser(req.params.userId, function (err, user) {
 		if (err) {
 			next(err);
@@ -39,7 +62,20 @@ root.get('/:userId', function (req, res, next) {
 	});
 });
 
-root.post('/', function (req, res, next) {
+/**
+ * @api {post} /account New User
+ * @apiName addUser
+ * @apiGroup Account
+ *
+ * @apiParam {String} user
+ * @apiParam {String} org
+ *
+ * @apiSuccess {String} id
+ * @apiSuccess {String} user
+ * @apiSuccess {String} org
+ * @apiSuccess {String} password
+ */
+root.post('/account', function (req, res, next) {
 	if (!req.body.user) {
 		next({
 			message: 'no user',
@@ -61,24 +97,17 @@ root.post('/', function (req, res, next) {
 	}
 });
 
-root.delete('/', function (req, res, next) {
-	if (!req.body.userId) {
-		next({
-			message: 'no userId',
-			status: 400
-		});
-	} else {
-		User.deleteUser(req.body.userId, function (err, user) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(user);
-			}
-		});
-	}
-});
-
-root.post('/resetpassword', function (req, res, next) {
+/**
+ * @api {post} /account/resetpassword Reset Password
+ * @apiName resetPassword
+ * @apiGroup Account
+ *
+ * @apiParam {String} userId
+ *
+ * @apiSuccess {String} id
+ * @apiSuccess {String} password
+ */
+root.post('/account/resetpassword', function (req, res, next) {
 	if (!req.body.userId) {
 		next({
 			message: 'no userId',
@@ -95,7 +124,17 @@ root.post('/resetpassword', function (req, res, next) {
 	}
 });
 
-root.post('/changepassword', function (req, res, next) {
+/**
+ * @api {post} /account/changepassword Change Password
+ * @apiName changePassword
+ * @apiGroup Account
+ *
+ * @apiParam {String} userId
+ * @apiParam {String} password
+ * @apiParam {String} newpassword
+ *
+ */
+root.post('/account/changepassword', function (req, res, next) {
 	if (!req.body.userId) {
 		next({
 			message: 'no userId',
@@ -116,10 +155,28 @@ root.post('/changepassword', function (req, res, next) {
 			if (err) {
 				next(err);
 			} else {
-				res.json(result);
+				res.sendStatus(200);
 			}
 		});
 	}
+});
+
+/**
+ * @api {delete} /account/:userId Delete User
+ * @apiName deleteUser
+ * @apiGroup Account
+ *
+ * @apiParam {String} userId
+ *
+ */
+root.delete('/account/:userId', function (req, res, next) {
+	User.deleteUser(req.params.userId, function (err, user) {
+		if (err) {
+			next(err);
+		} else {
+			res.sendStatus(200);
+		}
+	});
 });
 
 module.exports = root;

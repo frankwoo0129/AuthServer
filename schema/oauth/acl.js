@@ -35,7 +35,7 @@ module.exports = function (connection) {
 				callback({
 					debug: 'when createACL',
 					message: 'this clientId ACL is exists',
-					status: 404
+					status: 400
 				});
 			} else {
 				var ACL = connection.model('ACL'),

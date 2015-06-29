@@ -10,19 +10,24 @@ var UserSchema = require('../schema/addressbook/user');
 var token = require('./token');
 
 /**
- * @api {get} /account/profile Get Account Profile
- * @apiName getUserConfigure
- * @apiGroup Account
- *
- * @apiHeader {String} authorization Access Token.
- * @apiParam {String} user userID whose profile you want to get.
- *
+ * @apiDefine UserProfile
  * @apiSuccess {String} user user ID in org
  * @apiSuccess {String} email
  * @apiSuccess {String} work_phone
  * @apiSuccess {String} mobile_phone
  */
-root.get('/', token.getToken, function (req, res, next) {
+
+/**
+ * @api {get} /account/profile Get Account Profile
+ * @apiName getUserConfigure
+ * @apiGroup Account
+ *
+ * @apiHeader {String{32}} authorization Access Token.
+ * @apiParam {String} user userID whose profile you want to get. this user'org and yours is the same.
+ *
+ * @apiUse UserProfile
+ */
+root.get('/account/profile', token.getToken, function (req, res, next) {
 	if (!req.accessToken) {
 		next({
 			debug: 'no access_token',
@@ -63,17 +68,14 @@ root.get('/', token.getToken, function (req, res, next) {
  * @apiName setUserConfigure
  * @apiGroup Account
  *
- * @apiHeader {String} authorization Access Token.
+ * @apiHeader {String{32}} authorization Access Token.
  * @apiParam {String} [email]
  * @apiParam {String} [work_phone]
  * @apiParam {String} [mobile_phone]
  *
- * @apiSuccess {String} user user ID in org
- * @apiSuccess {String} email
- * @apiSuccess {String} work_phone
- * @apiSuccess {String} mobile_phone
+ * @apiUse UserProfile
  */
-root.post('/', token.getToken, function (req, res, next) {
+root.post('/account/profile', token.getToken, function (req, res, next) {
 	if (!req.accessToken) {
 		next({
 			debug: 'no access_token',

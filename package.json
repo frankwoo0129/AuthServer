@@ -2,11 +2,6 @@
   "name": "Auth",
   "version": "1.0.0",
   "description": "",
-  "apidoc": {
-    "template": {
-      "forceLanguage": "en"
-    }
-  },
   "main": "index.js",
   "dependencies": {
     "async": "^0.9.0",

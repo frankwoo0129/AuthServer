@@ -13,14 +13,23 @@ var acl = require('./accesscontrol');
 var profile = require('./profile');
 
 /**
+ * @apiDefine ReturnUserInfo
+ * @apiSuccess {Object} user User information.
+ * @apiSuccess {String{32}} user.id User ID.
+ * @apiSuccess {String} user.user User ID in org.
+ * @apiSuccess {String} user.org User org.
+ * @apiSuccess {Number} expires  Expired time.
+ */
+
+/**
  * @api {get} /oauth/token Check Access Token
  * @apiName CheckAccessToken
  * @apiGroup OAuth
  *
- * @apiHeader {String} authorization Access Token.
+ * @apiHeader {String} authorization Basic authorization with clientId and clientSecret
+ * @apiParam {String{32}} access_token Access Token.
  *
- * @apiSuccess {Object} user User information.
- * @apiSuccess {Number} expires  Expired time.
+ * @apiUse ReturnUserInfo
  */
 root.get('/oauth/token', token.getToken, function (req, res, next) {
 	if (req.accessToken) {
@@ -43,18 +52,23 @@ root.get('/oauth/token', token.getToken, function (req, res, next) {
  * @apiGroup OAuth
  *
  * @apiHeader {String} authorization Basic authorization with clientId and clientSecret
+ * @apiParam {String} grant_type now it's only "refresh_token" or "password"
+ * @apiParam {String{32}} [userId] if grant_type is "password"
+ * @apiParam {String} [user] if grant_type is "password"
+ * @apiParam {String} [org] if grant_type is "password"
+ * @apiParam {String} [password] if grant_type is "password"
+ * @apiParam {String{32}} [refresh_token] if grant_type is "refresh_token"
  *
- * @apiSuccess {String} access_token Access Token
- * @apiSuccess {String} refresh_token Refresh Token.
- * @apiSuccess {Object} user User information.
+ * @apiSuccess {String{32}} access_token Access Token
+ * @apiSuccess {String{32}} [refresh_token] Refresh Token.
  * @apiSuccess {String} token_type Always 'Bearer'.
- * @apiSuccess {Number} expires  Expired time.
+ * @apiUse ReturnUserInfo
  */
 root.post('/oauth/token', token.postToGetToken);
-root.use('/account/profile', profile);
-root.use('/account', account);
-root.use('/device', device);
-root.use('/client', client);
+root.use(profile);
+root.use(account);
+root.use(device);
+root.use(client);
 root.use('/acl', acl);
 
 module.exports = root;

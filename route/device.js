@@ -6,7 +6,27 @@
 var root = require('express').Router();
 var Device = require('../schema/oauth').Device;
 
-root.get('/:deviceId', function (req, res, next) {
+/**
+ * @apiDefine ReturnDeviceInfo
+ * @apiSuccess {String} id Device ID.
+ * @apiSuccess {String} lang mobile lang.
+ * @apiSuccess {String} imei mobile imei.
+ * @apiSuccess {String} serialId
+ * @apiSuccess {String} deviceType
+ * @apiSuccess {String} os iOS or Android.
+ * @apiSuccess {String} version os version.
+ */
+
+/**
+ * @api {get} /device/:deviceId Get Device Info
+ * @apiName getDevice
+ * @apiGroup Device
+ *
+ * @apiParam {String} deviceId Device ID
+ *
+ * @apiUse ReturnDeviceInfo
+ */
+root.get('/device/:deviceId', function (req, res, next) {
 	Device.getDevice(req.params.deviceId, function (err, device) {
 		if (err) {
 			next(err);
@@ -16,7 +36,21 @@ root.get('/:deviceId', function (req, res, next) {
 	});
 });
 
-root.post('/', function (req, res, next) {
+/**
+ * @api {post} /device New device
+ * @apiName addDevice
+ * @apiGroup Device
+ *
+ * @apiParam {String} lang="zh_tw" mobile lang.
+ * @apiParam {String} imei mobile imei.
+ * @apiParam {String} serialId
+ * @apiParam {String} deviceType
+ * @apiParam {String} os iOS or Android.
+ * @apiParam {String} version os version.
+ *
+ * @apiUse ReturnDeviceInfo
+ */
+root.post('/device', function (req, res, next) {
 	if (!req.body.imei) {
 		return next({
 			message: 'No imei',
@@ -65,21 +99,21 @@ root.post('/', function (req, res, next) {
 	}
 });
 
-root.delete('/', function (req, res, next) {
-	if (!req.body.deviceId) {
-		next({
-			message: 'no deviceId',
-			status: 400
-		});
-	} else {
-		Device.deleteDevice(req.body.deviceId, function (err, device) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(device);
-			}
-		});
-	}
+/**
+ * @api {delete} /device/:deviceId Delete Device
+ * @apiName deleteDevice
+ * @apiGroup Device
+ *
+ * @apiParam {String} deviceId Device ID
+ */
+root.delete('/device/:deviceId', function (req, res, next) {
+	Device.deleteDevice(req.params.deviceId, function (err, device) {
+		if (err) {
+			next(err);
+		} else {
+			res.sendStatus(200);
+		}
+	});
 });
 
 module.exports = root;
