@@ -12,8 +12,8 @@ var User = require('../schema/oauth').User;
  * @apiName getUserId
  * @apiGroup Account
  *
- * @apiParam {String} user
- * @apiParam {String} org
+ * @apiParam (Query Parameter) {String} user
+ * @apiParam (Query Parameter) {String} org
  *
  * @apiSuccess {String} id
  * @apiSuccess {String} user
@@ -46,7 +46,7 @@ root.get('/account', function (req, res, next) {
  * @apiName getUser
  * @apiGroup Account
  *
- * @apiParam {String} userId
+ * @apiParam (Url Parameter) {String} userId
  *
  * @apiSuccess {String} id
  * @apiSuccess {String} user
@@ -67,8 +67,8 @@ root.get('/account/:userId', function (req, res, next) {
  * @apiName addUser
  * @apiGroup Account
  *
- * @apiParam {String} user
- * @apiParam {String} org
+ * @apiParam (Body Parameter) {String} user
+ * @apiParam (Body Parameter) {String} org
  *
  * @apiSuccess {String} id
  * @apiSuccess {String} user
@@ -102,7 +102,7 @@ root.post('/account', function (req, res, next) {
  * @apiName resetPassword
  * @apiGroup Account
  *
- * @apiParam {String} userId
+ * @apiParam (Body Parameter) {String} userId
  *
  * @apiSuccess {String} id
  * @apiSuccess {String} password
@@ -129,9 +129,9 @@ root.post('/account/resetpassword', function (req, res, next) {
  * @apiName changePassword
  * @apiGroup Account
  *
- * @apiParam {String} userId
- * @apiParam {String} password
- * @apiParam {String} newpassword
+ * @apiParam (Body Parameter) {String} userId
+ * @apiParam (Body Parameter) {String} password
+ * @apiParam (Body Parameter) {String} newpassword
  *
  */
 root.post('/account/changepassword', function (req, res, next) {
@@ -166,7 +166,7 @@ root.post('/account/changepassword', function (req, res, next) {
  * @apiName deleteUser
  * @apiGroup Account
  *
- * @apiParam {String} userId
+ * @apiParam (Url Parameter) {String} userId
  *
  */
 root.delete('/account/:userId', function (req, res, next) {

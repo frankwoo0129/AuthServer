@@ -45,7 +45,7 @@ root.get('/client', function (req, res, next) {
  * @apiName getClient
  * @apiGroup Client
  *
- * @apiParam {String} clientId Client ID
+ * @apiParam (Url Parameter) {String} clientId Client ID
  *
  * @apiUse ReturnClientInfo
  *
@@ -73,10 +73,10 @@ root.get('/client/:clientId', function (req, res, next) {
  * @apiName addClient
  * @apiGroup Client
  *
- * @apiParam {String} name
- * @apiParam {String} type
- * @apiParam {String} os
- * @apiParam {String} version
+ * @apiParam (Body Parameter) {String} name
+ * @apiParam (Body Parameter) {String} type
+ * @apiParam (Body Parameter) {String} os
+ * @apiParam (Body Parameter) {String} version
  *
  * @apiUse ReturnClientInfo
  * @apiSuccess {String} [clientSecret] Client Secret.
@@ -118,7 +118,7 @@ root.post('/client', function (req, res, next) {
  * @apiName deleteClient
  * @apiGroup Client
  *
- * @apiParam {String} clientId
+ * @apiParam (Url Parameter) {String} clientId
  */
 root.delete('/client/:clientId', function (req, res, next) {
 	Client.deleteClient(req.params.clientId, function (err, client) {

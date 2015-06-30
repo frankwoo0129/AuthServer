@@ -52,12 +52,12 @@ root.get('/oauth/token', token.getToken, function (req, res, next) {
  * @apiGroup OAuth
  *
  * @apiHeader {String} authorization Basic authorization with clientId and clientSecret
- * @apiParam {String} grant_type now it's only "refresh_token" or "password"
- * @apiParam {String{32}} [userId] if grant_type is "password"
- * @apiParam {String} [user] if grant_type is "password"
- * @apiParam {String} [org] if grant_type is "password"
- * @apiParam {String} [password] if grant_type is "password"
- * @apiParam {String{32}} [refresh_token] if grant_type is "refresh_token"
+ * @apiParam (Body Parameter) {String} grant_type now it's only "refresh_token" or "password"
+ * @apiParam (Body Parameter) {String{32}} [userId] if grant_type is "password"
+ * @apiParam (Body Parameter) {String} [user] if grant_type is "password"
+ * @apiParam (Body Parameter) {String} [org] if grant_type is "password"
+ * @apiParam (Body Parameter) {String} [password] if grant_type is "password"
+ * @apiParam (Body Parameter) {String{32}} [refresh_token] if grant_type is "refresh_token"
  *
  * @apiSuccess {String{32}} access_token Access Token
  * @apiSuccess {String{32}} [refresh_token] Refresh Token.

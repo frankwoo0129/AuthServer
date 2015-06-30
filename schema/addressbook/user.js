@@ -19,21 +19,6 @@ var UserSchema = new mongoose.Schema({
 });
 
 module.exports = function (connection) {
-	UserSchema.pre('save', function (next) {
-		var self = this;
-		connection.model('User').findOne({
-			user: self.user,
-		}, function (err, result) {
-			if (err) {
-				next(err);
-			} else if (result) {
-				next(new Error('this user is exists'));
-			} else {
-				next();
-			}
-		});
-	});
-
 	UserSchema.statics.getUserConfigure = function (user, callback) {
 		var query = {user: user};
 		connection.model('User').findOne(query, {user: true, email: true, mobile_phone: true, work_phone: true, "_id": false}, function (err, result) {
