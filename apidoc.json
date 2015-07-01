@@ -1,5 +1,6 @@
 {
 	"title": "Oauth API",
+	"sampleUrl": "http://localhost:8008",
 	"template": {
 		"forceLanguage": "en"
 	}

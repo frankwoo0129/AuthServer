@@ -23,7 +23,7 @@ var token = require('./token');
  * @apiGroup Account
  *
  * @apiHeader {String{32}} authorization Access Token.
- * @apiParam (Query Parameter) {String} user userID whose profile you want to get. this user'org and yours is the same.
+ * @apiParam {String} user userID whose profile you want to get. this user'org and yours is the same.
  *
  * @apiUse UserProfile
  */
@@ -69,9 +69,9 @@ root.get('/account/profile', token.getToken, function (req, res, next) {
  * @apiGroup Account
  *
  * @apiHeader {String{32}} authorization Access Token.
- * @apiParam (Body Parameter) {String} [email]
- * @apiParam (Body Parameter) {String} [work_phone]
- * @apiParam (Body Parameter) {String} [mobile_phone]
+ * @apiParam {String} [email]
+ * @apiParam {String} [work_phone]
+ * @apiParam {String} [mobile_phone]
  *
  * @apiUse UserProfile
  */

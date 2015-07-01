@@ -22,7 +22,7 @@ var profile = require('./profile');
  */
 
 /**
- * @api {get} /oauth/token Check Access Token
+ * @api {get} /oauth/token/:access_token Check Access Token
  * @apiName CheckAccessToken
  * @apiGroup OAuth
  *
@@ -31,16 +31,36 @@ var profile = require('./profile');
  *
  * @apiUse ReturnUserInfo
  */
-root.get('/oauth/token', token.getToken, function (req, res, next) {
-	if (req.accessToken) {
-		var expire = (req.accessToken.expires.getTime() - new Date().getTime()) / 1000;
-		res.status(200).json({
-			user: req.accessToken.user,
-			expires: expire
+root.get('/oauth/token/:accessToken', token.checkClient, function (req, res, next) {
+	if (req.oauth) {
+		oauth2.getAccessToken(req.params.accessToken, function (err, accessToken) {
+			if (err) {
+				next(err);
+			} else if (!accessToken) {
+				next({
+					debug: 'no this token',
+					message: 'invalid_token',
+					status: 401
+				});
+			} else {
+				var expire = (accessToken.expires.getTime() - new Date().getTime()) / 1000;
+				if (expire < 0) {
+					next({
+						debug: 'token expired',
+						message: 'invalid_token',
+						status: 401
+					});
+				} else {
+					res.status(200).json({
+						user: accessToken.user,
+						expires: expire
+					});
+				}
+			}
 		});
 	} else {
 		return next({
-			message: 'invalid_grant',
+			message: 'invalid_client',
 			status: 401
 		});
 	}
@@ -52,12 +72,12 @@ root.get('/oauth/token', token.getToken, function (req, res, next) {
  * @apiGroup OAuth
  *
  * @apiHeader {String} authorization Basic authorization with clientId and clientSecret
- * @apiParam (Body Parameter) {String} grant_type now it's only "refresh_token" or "password"
- * @apiParam (Body Parameter) {String{32}} [userId] if grant_type is "password"
- * @apiParam (Body Parameter) {String} [user] if grant_type is "password"
- * @apiParam (Body Parameter) {String} [org] if grant_type is "password"
- * @apiParam (Body Parameter) {String} [password] if grant_type is "password"
- * @apiParam (Body Parameter) {String{32}} [refresh_token] if grant_type is "refresh_token"
+ * @apiParam {String="refresh_token","password"} grant_type only two options
+ * @apiParam {String{32}} [userId] if grant_type is "password"
+ * @apiParam {String} [user] if grant_type is "password"
+ * @apiParam {String} [org] if grant_type is "password"
+ * @apiParam {String} [password] if grant_type is "password"
+ * @apiParam {String{32}} [refresh_token] if grant_type is "refresh_token"
  *
  * @apiSuccess {String{32}} access_token Access Token
  * @apiSuccess {String{32}} [refresh_token] Refresh Token.
@@ -69,6 +89,6 @@ root.use(profile);
 root.use(account);
 root.use(device);
 root.use(client);
-root.use('/acl', acl);
+root.use(acl);
 
 module.exports = root;

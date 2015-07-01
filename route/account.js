@@ -8,16 +8,21 @@ var root = require('express').Router();
 var User = require('../schema/oauth').User;
 
 /**
+ * @apiDefine ReturnUserInfo
+ * @apiSuccess {String} id
+ * @apiSuccess {String} user
+ * @apiSuccess {String} org
+ */
+
+/**
  * @api {get} /account Get User ID
  * @apiName getUserId
  * @apiGroup Account
  *
- * @apiParam (Query Parameter) {String} user
- * @apiParam (Query Parameter) {String} org
+ * @apiParam {String} user
+ * @apiParam {String} org
  *
- * @apiSuccess {String} id
- * @apiSuccess {String} user
- * @apiSuccess {String} org
+ * @apiUse ReturnUserInfo
  */
 root.get('/account', function (req, res, next) {
 	if (!req.query.user) {
@@ -46,11 +51,9 @@ root.get('/account', function (req, res, next) {
  * @apiName getUser
  * @apiGroup Account
  *
- * @apiParam (Url Parameter) {String} userId
+ * @apiParam {String} userId
  *
- * @apiSuccess {String} id
- * @apiSuccess {String} user
- * @apiSuccess {String} org
+ * @apiUse ReturnUserInfo
  */
 root.get('/account/:userId', function (req, res, next) {
 	User.getUser(req.params.userId, function (err, user) {
@@ -67,13 +70,11 @@ root.get('/account/:userId', function (req, res, next) {
  * @apiName addUser
  * @apiGroup Account
  *
- * @apiParam (Body Parameter) {String} user
- * @apiParam (Body Parameter) {String} org
+ * @apiParam {String} user
+ * @apiParam {String} org
  *
- * @apiSuccess {String} id
- * @apiSuccess {String} user
- * @apiSuccess {String} org
- * @apiSuccess {String} password
+ * @apiUse ReturnUserInfo
+ * @apiSuccess {String} password default password
  */
 root.post('/account', function (req, res, next) {
 	if (!req.body.user) {
@@ -102,7 +103,7 @@ root.post('/account', function (req, res, next) {
  * @apiName resetPassword
  * @apiGroup Account
  *
- * @apiParam (Body Parameter) {String} userId
+ * @apiParam {String} userId
  *
  * @apiSuccess {String} id
  * @apiSuccess {String} password
@@ -129,10 +130,9 @@ root.post('/account/resetpassword', function (req, res, next) {
  * @apiName changePassword
  * @apiGroup Account
  *
- * @apiParam (Body Parameter) {String} userId
- * @apiParam (Body Parameter) {String} password
- * @apiParam (Body Parameter) {String} newpassword
- *
+ * @apiParam {String} userId
+ * @apiParam {String} password
+ * @apiParam {String} newpassword
  */
 root.post('/account/changepassword', function (req, res, next) {
 	if (!req.body.userId) {
@@ -166,8 +166,7 @@ root.post('/account/changepassword', function (req, res, next) {
  * @apiName deleteUser
  * @apiGroup Account
  *
- * @apiParam (Url Parameter) {String} userId
- *
+ * @apiParam {String} userId
  */
 root.delete('/account/:userId', function (req, res, next) {
 	User.deleteUser(req.params.userId, function (err, user) {

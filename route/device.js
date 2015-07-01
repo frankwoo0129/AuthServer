@@ -13,7 +13,7 @@ var Device = require('../schema/oauth').Device;
  * @apiSuccess {String} imei mobile imei.
  * @apiSuccess {String} serialId
  * @apiSuccess {String} deviceType
- * @apiSuccess {String} os iOS or Android.
+ * @apiSuccess {String="iOS","Android"} os iOS or Android.
  * @apiSuccess {String} version os version.
  */
 
@@ -22,7 +22,7 @@ var Device = require('../schema/oauth').Device;
  * @apiName getDevice
  * @apiGroup Device
  *
- * @apiParam (Url Parameter) {String} deviceId Device ID
+ * @apiParam {String{32}} deviceId Device ID
  *
  * @apiUse ReturnDeviceInfo
  */
@@ -41,12 +41,13 @@ root.get('/device/:deviceId', function (req, res, next) {
  * @apiName addDevice
  * @apiGroup Device
  *
- * @apiParam (Body Parameter) {String} lang="zh_tw" mobile lang.
- * @apiParam (Body Parameter) {String} imei mobile imei.
- * @apiParam (Body Parameter) {String} serialId
- * @apiParam (Body Parameter) {String} deviceType
- * @apiParam (Body Parameter) {String} os iOS or Android.
- * @apiParam (Body Parameter) {String} version os version.
+ * @apiParam {String{32}} clientId Client ID
+ * @apiParam {String} lang="zh_tw" mobile lang.
+ * @apiParam {String} imei mobile imei.
+ * @apiParam {String} serialId
+ * @apiParam {String} deviceType
+ * @apiParam {String="iOS","Android"} os iOS or Android.
+ * @apiParam {String} version os version.
  *
  * @apiUse ReturnDeviceInfo
  */
@@ -104,7 +105,7 @@ root.post('/device', function (req, res, next) {
  * @apiName deleteDevice
  * @apiGroup Device
  *
- * @apiParam (Url Parameter) {String} deviceId Device ID
+ * @apiParam {String{32}} deviceId Device ID
  */
 root.delete('/device/:deviceId', function (req, res, next) {
 	Device.deleteDevice(req.params.deviceId, function (err, device) {

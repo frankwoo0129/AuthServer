@@ -8,13 +8,13 @@ var root = require('express').Router();
 var ACL = require('../schema/oauth').ACL;
 var ACLEntry = require('../schema/oauth').ACLEntry;
 
-root.route('/')
+root.route('/acl')
 	/**
-	 * @api {get} / Get ACL List
+	 * @api {get} /acl Get ACL List
 	 * @apiName getAllACL
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
+	 * @apiHeader {String{32}} authorization Access Token.
 	 *
 	 * @apiSuccess {Object[]} acls List of ACL.
 	 * @apiSuccess {String} acls.name Name.
@@ -40,13 +40,13 @@ root.route('/')
 			});
 		});
 	/**
-	 * @api {post} / Create ACL
+	 * @api {post} /acl Create ACL
 	 * @apiName createACL
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Body Parameter) {String} clientId
-	 * @apiParam (Body Parameter) {String} name
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} name
 	 *
 	 */
 	}).post(function (req, res, next) {
@@ -61,14 +61,14 @@ root.route('/')
 	});
 
 
-root.route('/:clientId')
+root.route('/acl/:clientId')
 	/**
-	 * @api {get} /:clientId Get ACL Info
+	 * @api {get} /acl/:clientId Get ACL Info
 	 * @apiName getACL
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
 	 *
 	 * @apiSuccess {String} name Client Name.
 	 * @apiSuccess {String} clientId Client ID.
@@ -97,12 +97,12 @@ root.route('/:clientId')
 	}).put(function (req, res, next) {
 		next();
 	/**
-	 * @api {delete} /:clientId Delete ACL
+	 * @api {delete} /acl/:clientId Delete ACL
 	 * @apiName removeACL
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
 	 */
 	}).delete(function (req, res, next) {
 		// 刪除ACL
@@ -115,14 +115,14 @@ root.route('/:clientId')
 		});
 	});
 
-root.route('/:clientId/_role')
+root.route('/acl/:clientId/_role')
 	/**
-	 * @api {get} /:clientId/_role Get ACL Roles
+	 * @api {get} /acl/:clientId/_role Get ACL Roles
 	 * @apiName getACLRoles
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
 	 *
 	 * @apiSuccess {Object[]} roles Roles
 	 * @apiSuccess {String} roles.name Rolename
@@ -141,13 +141,13 @@ root.route('/:clientId/_role')
 			}
 		});
 	/**
-	 * @api {post} /:clientId/_role Add ACL Role
+	 * @api {post} /acl/:clientId/_role Add ACL Role
 	 * @apiName addRole
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Body Parameter) {String} rolename
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} rolename
 	 */
 	}).post(function (req, res, next) {
 		// 新增client角色
@@ -161,12 +161,12 @@ root.route('/:clientId/_role')
 	}).put(function (req, res, next) {
 		next();
 	/**
-	 * @api {delete} /:clientId/_role Delete All ACL Roles
+	 * @api {delete} /acl/:clientId/_role Delete All ACL Roles
 	 * @apiName deleteAllRole
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
 	 */
 	}).delete(function (req, res, next) {
 		// 刪除所有角色
@@ -179,24 +179,24 @@ root.route('/:clientId/_role')
 		});
 	});
 
-root.route('/:clientId/_role/:rolename')
+root.route('/acl/:clientId/_role/:rolename')
 	.get(function (req, res, next) {
 		next();
 	}).post(function (req, res, next) {
 		next();
 	/**
-	 * @api {put} /:clientId/_role/:rolename Change ACL Rolename
+	 * @api {put} /acl/:clientId/_role/:rolename Change ACL Rolename
 	 * @apiName renameRole
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} rolename
-	 * @apiParam (Body Parameter) {String} rolename
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} rolename
+	 * @apiParam {String} name
 	 */
 	}).put(function (req, res, next) {
 		// 更名client角色
-		ACL.renameRole(req.params.clientId, req.params.rolename, req.body.rolename, function (err) {
+		ACL.renameRole(req.params.clientId, req.params.rolename, req.body.name, function (err) {
 			if (err) {
 				next(err);
 			} else {
@@ -204,13 +204,13 @@ root.route('/:clientId/_role/:rolename')
 			}
 		});
 	/**
-	 * @api {delete} /:clientId/_role/:rolename Delete ACL role
+	 * @api {delete} /acl/:clientId/_role/:rolename Delete ACL role
 	 * @apiName deleteRole
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} rolename
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} rolename
 	 */
 	}).delete(function (req, res, next) {
 		// 刪除client角色
@@ -223,14 +223,14 @@ root.route('/:clientId/_role/:rolename')
 		});
 	});
 
-root.route('/:clientId/_entry')
+root.route('/acl/:clientId/_entry')
 	/**
-	 * @api {get} /:clientId/_entry Get All ACL Entries
+	 * @api {get} /acl/:clientId/_entry Get All ACL Entries
 	 * @apiName getAllEntry
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
 	 *
 	 * @apiSuccess {Object[]} entries Entries
 	 * @apiSuccess {String} entries.name Entry name
@@ -246,13 +246,13 @@ root.route('/:clientId/_entry')
 			}
 		});
 	/**
-	 * @api {post} /:clientId/_entry Create ACL Entry
+	 * @api {post} /acl/:clientId/_entry Create ACL Entry
 	 * @apiName createACLEntry
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Body Parameter) {String} name
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} name
 	 */
 	}).post(function (req, res, next) {
 		// 新增一個client ACLEntry
@@ -269,15 +269,15 @@ root.route('/:clientId/_entry')
 		next();
 	});
 
-root.route('/:clientId/_entry/:entryname')
+root.route('/acl/:clientId/_entry/:entryname')
 	/**
-	 * @api {get} /:clientId/_entry/:entryname Get ACL Entry Info
-	 * @apiName getEntry
+	 * @api {get} /acl/:clientId/_entry/:entryname Get ACL Entry Info
+	 * @apiName getACLEntry
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} entryname
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} entryname
 	 *
 	 * @apiSuccess {String} clientId Client ID
 	 * @apiSuccess {String} name Entry name
@@ -309,13 +309,13 @@ root.route('/:clientId/_entry/:entryname')
 	}).put(function (req, res, next) {
 		next();
 	/**
-	 * @api {delete} /:clientId/_entry/:entryname Delete ACL Entry
-	 * @apiName getAllEntry
+	 * @api {delete} /acl/:clientId/_entry/:entryname Delete ACL Entry
+	 * @apiName deleteACLEntry
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} entryname
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} entryname
 	 */
 	}).delete(function (req, res, next) {
 		// 刪除一個client ACLEntry
@@ -328,29 +328,27 @@ root.route('/:clientId/_entry/:entryname')
 		});
 	});
 
-root.route('/:clientId/_entry/:entryname/_role')
+root.route('/acl/:clientId/_entry/:entryname/_role')
 	/**
-	 * @api {get} /:clientId/_entry/:entryname/_role Get ACL Entry Info
+	 * @api {get} /acl/:clientId/_entry/:entryname/_role Get ACL Entry Info
 	 * @apiName getAllRoles
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} entryname
-	 *
-	 * @apiSuccess {String} clientId Client ID
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} entryname
 	 */
 	.get(function (req, res, next) {
 		// 取得entry所有角色
 	/**
-	 * @api {post} /:clientId/_entry/:entryname/_role Enable ACL Entry Role
+	 * @api {post} /acl/:clientId/_entry/:entryname/_role Enable ACL Entry Role
 	 * @apiName enableRole
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} entryname
-	 * @apiParam (Body Parameter) {String} rolename
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} entryname
+	 * @apiParam {String} rolename
 	 */
 	}).post(function (req, res, next) {
 		// 新增client ACLEntry 角色
@@ -364,28 +362,28 @@ root.route('/:clientId/_entry/:entryname/_role')
 	}).put(function (req, res, next) {
 		next();
 	/**
-	 * @api {delete} /:clientId/_entry/:entryname/_role Disable ACL Entry All Roles
+	 * @api {delete} /acl/:clientId/_entry/:entryname/_role Disable ACL Entry All Roles
 	 * @apiName disableAllRoles
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} entryname
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} entryname
 	 */
 	}).delete(function (req, res, next) {
 		// 刪除entry所有角色
 	});
 
-root.route('/:clientId/_entry/:entryname/_role/:rolename')
+root.route('/acl/:clientId/_entry/:entryname/_role/:rolename')
 	/**
-	 * @api {get} /:clientId/_entry/:entryname/_role/:rolename Check ACL Entry Role enable
+	 * @api {get} /acl/:clientId/_entry/:entryname/_role/:rolename Check ACL Entry Role enable
 	 * @apiName isEnableRole
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} entryname
-	 * @apiParam (Url Parameter) {String} rolename
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} entryname
+	 * @apiParam {String} rolename
 	 */
 	.get(function (req, res, next) {
 		// entry有無此角色
@@ -403,14 +401,14 @@ root.route('/:clientId/_entry/:entryname/_role/:rolename')
 	}).put(function (req, res, next) {
 		next();
 	/**
-	 * @api {delete} /:clientId/_entry/:entryname/_role/:rolename Disable ACL Entry Role
+	 * @api {delete} /acl/:clientId/_entry/:entryname/_role/:rolename Disable ACL Entry Role
 	 * @apiName disableRole
 	 * @apiGroup ACL
 	 *
-	 * @apiHeader {String} authorization Access Token.
-	 * @apiParam (Url Parameter) {String} clientId
-	 * @apiParam (Url Parameter) {String} entryname
-	 * @apiParam (Url Parameter) {String} rolename
+	 * @apiHeader {String{32}} authorization Access Token.
+	 * @apiParam {String{32}} clientId
+	 * @apiParam {String} entryname
+	 * @apiParam {String} rolename
 	 */
 	}).delete(function (req, res, next) {
 		// 刪除entry單一角色
@@ -423,7 +421,7 @@ root.route('/:clientId/_entry/:entryname/_role/:rolename')
 		});
 	});
 
-root.route('/:clientId/_entry/:entryname/_member')
+root.route('/acl/:clientId/_entry/:entryname/_member')
 	.get(function (req, res, next) {
 		// 取得所有人員和群組
 	}).post(function (req, res, next) {
@@ -434,7 +432,7 @@ root.route('/:clientId/_entry/:entryname/_member')
 		// 刪除所有人員群組
 	});
 
-root.route('/:clientId/_entry/:entryname/_member/:org/:name')
+root.route('/acl/:clientId/_entry/:entryname/_member/:org/:name')
 	.get(function (req, res, next) {
 		// 取得特定人員或群組
 	}).post(function (req, res, next) {
@@ -446,16 +444,16 @@ root.route('/:clientId/_entry/:entryname/_member/:org/:name')
 	});
 
 /**
- * @api {put} /:clientId/_entry/:entryname/_name Rename ACL Entry
+ * @api {put} /acl/:clientId/_entry/:entryname/_name Rename ACL Entry
  * @apiName rename
  * @apiGroup ACL
  *
- * @apiHeader {String} authorization Access Token.
- * @apiParam (Url Parameter) {String} clientId
- * @apiParam (Url Parameter) {String} entryname
- * @apiParam (Body Parameter) {String} name
+ * @apiHeader {String{32}} authorization Access Token.
+ * @apiParam {String{32}} clientId
+ * @apiParam {String} entryname
+ * @apiParam {String} name
  */
-root.put('/:clientId/_entry/:entryname/_name', function (req, res, next) {
+root.put('/acl/:clientId/_entry/:entryname/_name', function (req, res, next) {
 	// 更名client ACLEntry
 	ACLEntry.rename(req.params.clientId, req.params.entryname, req.body.name, function (err) {
 		if (err) {
@@ -467,16 +465,16 @@ root.put('/:clientId/_entry/:entryname/_name', function (req, res, next) {
 });
 
 /**
- * @api {put} /:clientId/_entry/:entryname/_level Set ACL Entry Level
+ * @api {put} /acl/:clientId/_entry/:entryname/_level Set ACL Entry Level
  * @apiName setLevel
  * @apiGroup ACL
  *
- * @apiHeader {String} authorization Access Token.
- * @apiParam (Url Parameter) {String} clientId
- * @apiParam (Url Parameter) {String} entryname
- * @apiParam (Body Parameter) {String} level
+ * @apiHeader {String{32}} authorization Access Token.
+ * @apiParam {String{32}} clientId
+ * @apiParam {String} entryname
+ * @apiParam {String} level
  */
-root.put('/:clientId/_entry/:entryname/_level', function (req, res, next) {
+root.put('/acl/:clientId/_entry/:entryname/_level', function (req, res, next) {
 	// 變更client ACLEntry 權限
 	ACLEntry.setLevel(req.params.clientId, req.params.entryname, req.body.level, function (err) {
 		if (err) {
@@ -488,16 +486,16 @@ root.put('/:clientId/_entry/:entryname/_level', function (req, res, next) {
 });
 
 /**
- * @api {put} /:clientId/_entry/:entryname/_description Set ACL Entry Description
+ * @api {put} /acl/:clientId/_entry/:entryname/_description Set ACL Entry Description
  * @apiName setDescription
  * @apiGroup ACL
  *
- * @apiHeader {String} authorization Access Token.
- * @apiParam (Url Parameter) {String} clientId
- * @apiParam (Url Parameter) {String} entryname
- * @apiParam (Body Parameter) {String} description
+ * @apiHeader {String{32}} authorization Access Token.
+ * @apiParam {String{32}} clientId
+ * @apiParam {String} entryname
+ * @apiParam {String} description
  */
-root.put('/:clientId/_entry/:entryname/_description', function (req, res, next) {
+root.put('/acl/:clientId/_entry/:entryname/_description', function (req, res, next) {
 	// 變更client ACLEntry 敘述
 	ACLEntry.setDescription(req.params.clientId, req.params.entryname, req.body.description, function (err) {
 		if (err) {
