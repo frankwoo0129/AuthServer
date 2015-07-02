@@ -330,7 +330,7 @@ root.route('/acl/:clientId/_entry/:entryname')
 
 root.route('/acl/:clientId/_entry/:entryname/_role')
 	/**
-	 * @api {get} /acl/:clientId/_entry/:entryname/_role Get ACL Entry Info
+	 * @api {get} /acl/:clientId/_entry/:entryname/_role Get ACL Entry Role enable
 	 * @apiName getAllRoles
 	 * @apiGroup ACL
 	 *

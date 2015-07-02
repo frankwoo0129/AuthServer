@@ -29,6 +29,25 @@ var Client = require('../schema/oauth').Client;
  * @apiSuccess {String} clients.version client version.
  * @apiSuccess {Boolean} clients.expired expired or not.
  *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *       {
+ *         "id": "",
+ *         "name": "",
+ *         "type": "",
+ *         "os": "",
+ *         "version": "",
+ *         "expired": false
+ *       }, {
+ *         "id": "",
+ *         "name": "",
+ *         "type": "",
+ *         "os": "",
+ *         "version": "",
+ *         "expired": false
+ *       }
+ *     ]
  */
 root.get('/client', function (req, res, next) {
 	Client.getAllClient(function (err, results) {
@@ -48,15 +67,19 @@ root.get('/client', function (req, res, next) {
  * @apiParam {String} clientId Client ID
  *
  * @apiUse ReturnClientInfo
- *
- * @apiUse UserError
- * @apiUse SystemError
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "firstname": "John",
- *       "lastname": "Doe"
+ *       "id": "",
+ *       "name": "",
+ *       "type": "",
+ *       "os": "",
+ *       "version": "",
+ *       "expired": false
  *     }
+ *
+ * @apiUse UserError
+ * @apiUse SystemError
  */
 root.get('/client/:clientId', function (req, res, next) {
 	Client.getClient(req.params.clientId, function (err, client) {
@@ -80,6 +103,17 @@ root.get('/client/:clientId', function (req, res, next) {
  *
  * @apiUse ReturnClientInfo
  * @apiSuccess {String} [clientSecret] Client Secret.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "id": "",
+ *       "secret": "",
+ *       "name": "",
+ *       "type": "",
+ *       "os": "",
+ *       "version": "",
+ *       "expired": false
+ *     }
  */
 root.post('/client', function (req, res, next) {
 	if (!req.body.name) {
