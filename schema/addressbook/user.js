@@ -38,7 +38,7 @@ module.exports = function (connection) {
 				user: user
 			};
 
-		connection.model('User').findOne(query, {user: true, email: true, mobile_phone: true, work_phone: true, "_id": false}, function (err, result) {
+		connection.model('User').findOne(query, function (err, result) {
 			if (err) {
 				callback(err);
 			} else if (!result) {
@@ -70,7 +70,12 @@ module.exports = function (connection) {
 					if (err) {
 						callback(err);
 					} else {
-						callback(null, result);
+						callback(null, {
+							user: result.user,
+							email: result.email,
+							mobile_phone: result.mobile_phone,
+							work_phone: result.work_phone
+						});
 					}
 				});
 			} else {

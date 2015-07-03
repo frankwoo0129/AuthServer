@@ -170,7 +170,7 @@ module.exports = function (connection) {
 	};
 
 	ACLEntrySchema.statics.setEntryLevel = function (clientId, name, level, callback) {
-		connection.model('ACLEntry').findOneAndUpdate({
+		connection.model('ACLEntry').findOne({
 			clientId: clientId,
 			name: name
 		}, function (err, result) {
@@ -193,7 +193,7 @@ module.exports = function (connection) {
 	};
 
 	ACLEntrySchema.statics.setEntryDescription = function (clientId, name, description, callback) {
-		connection.model('ACLEntry').findOneAndUpdate({
+		connection.model('ACLEntry').findOne({
 			clientId: clientId,
 			name: name
 		}, function (err, result) {
