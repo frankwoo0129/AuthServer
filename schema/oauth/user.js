@@ -222,6 +222,14 @@ module.exports = function (connection) {
 		});
 	};
 
+	UserSchema.methods.comparePassword = function (password, callback) {
+		if (this.password === password) {
+			callback(null, true);
+		} else {
+			callback(null, false);
+		}
+	};
+
 	var User = connection.model('User', UserSchema);
 	return User;
 };

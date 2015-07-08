@@ -45,6 +45,7 @@ root.get('/account/profile', token.getToken, function (req, res, next) {
 				} else {
 					res.json(result);
 				}
+				connection.close();
 			});
 		} else if (typeof req.query.user === 'object') {
 			async.map(req.query.user, User.getUserConfigure, function (err, results) {
@@ -53,12 +54,14 @@ root.get('/account/profile', token.getToken, function (req, res, next) {
 				} else {
 					res.json(results);
 				}
+				connection.close();
 			});
 		} else {
 			next({
 				message: 'no user',
 				status: 400
 			});
+			connection.close();
 		}
 	}
 });
@@ -95,6 +98,7 @@ root.post('/account/profile', token.getToken, function (req, res, next) {
 			} else {
 				res.json(result);
 			}
+			connection.close();
 		});
 	}
 });
