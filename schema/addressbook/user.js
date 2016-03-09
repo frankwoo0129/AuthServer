@@ -33,9 +33,10 @@ module.exports = function (connection) {
 	};
 
 	UserSchema.statics.setUserConfigure = function (user, config, callback) {
+		console.log(config);
 		var set = {},
 			query = {
-				user: user
+				username: user
 			};
 
 		connection.model('User').findOne(query, function (err, result) {
@@ -70,12 +71,7 @@ module.exports = function (connection) {
 					if (err) {
 						callback(err);
 					} else {
-						callback(null, {
-							user: result.user,
-							email: result.email,
-							mobile_phone: result.mobile_phone,
-							work_phone: result.work_phone
-						});
+						callback(null, result);
 					}
 				});
 			} else {

@@ -39,12 +39,16 @@ root.get('/account/profile', token.getToken, function (req, res, next) {
 			connection = mongoose.createConnection('mongodb://localhost:27017/' + req.accessToken.user.org),
 			User = new UserSchema(connection);
 		if (typeof req.query.user === 'string') {
+			var ret = [];
 			User.getUserConfigure(req.query.user, function (err, result) {
 				if (err) {
 					next(err);
 				} else {
+					//ret.push(result);
+					//res.json(ret);
 					res.json(result);
 				}
+				connection.close();
 			});
 		} else if (typeof req.query.user === 'object') {
 			async.map(req.query.user, User.getUserConfigure, function (err, results) {
@@ -53,12 +57,14 @@ root.get('/account/profile', token.getToken, function (req, res, next) {
 				} else {
 					res.json(results);
 				}
+				connection.close();
 			});
 		} else {
 			next({
 				message: 'no user',
 				status: 400
 			});
+			connection.close();
 		}
 	}
 });
@@ -95,6 +101,7 @@ root.post('/account/profile', token.getToken, function (req, res, next) {
 			} else {
 				res.json(result);
 			}
+			connection.close();
 		});
 	}
 });

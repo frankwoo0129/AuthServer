@@ -27,33 +27,33 @@ var random = require('./lib/util').randomString('abcdefghijklmnopqrstuvwxyz');
 //var plain = 'hello world123456789012345678901234567890123456789012345678901234567890';
 //console.log(aes.encrypt_ctr(plain, random(12)));
 
-mongoose.connect('mongodb://localhost:27017/test');
-mongoose.connection.on('error', function (err) {
-	console.log(err);
-	process.exit();
-});
-
-var TestSchema = new mongoose.Schema({
-	id: {
-		type: String
-	},
-	user: {
-		type: String
-	},
-	createdAt: {
-		type: Date,
-		default: Date.now,
-	},
-});
-
-var Test = mongoose.model('Test', TestSchema);
-
-TestSchema.path('id').validate(function (value, response) {
-	var self = this;
-	console.log(self);
-	response(true);
-}, 'Validation of {id} failed');
-
+//mongoose.connect('mongodb://localhost:27017/test');
+//mongoose.connection.on('error', function (err) {
+//	console.log(err);
+//	process.exit();
+//});
+//
+//var TestSchema = new mongoose.Schema({
+//	id: {
+//		type: String
+//	},
+//	user: {
+//		type: String
+//	},
+//	createdAt: {
+//		type: Date,
+//		default: Date.now,
+//	},
+//});
+//
+//var Test = mongoose.model('Test', TestSchema);
+//
+//TestSchema.path('id').validate(function (value, response) {
+//	var self = this;
+//	console.log(self);
+//	response(true);
+//}, 'Validation of {id} failed');
+//
 //var newTest = new Test();
 //newTest.id = random(12);
 //newTest.save(function (err) {
@@ -64,17 +64,9 @@ TestSchema.path('id').validate(function (value, response) {
 //	}
 //});
 
-Test.find({}, {"_id": false, id: true}, function (err, results) {
-	if (err) {
-		console.log(err);
-	} else {
-		console.log(results);
-	}
-});
+var randomString = require('./lib/util').randomString("abcdefghijklmnopqrstuwxyz0123456789", 32);
 
-//var randomString = require('./lib/util').randomString("abcdefghijklmnopqrstuwxyz0123456789", 32);
-//
-//console.log(randomString());
+console.log(randomString());
 
 
 

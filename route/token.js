@@ -182,7 +182,7 @@ var usePassword = function (req, res, next) {
 			status: 400
 		});
 	} else {
-		User.getUserId(req.body.user, req.body.org, function (err, result) {
+		User.getUserId(req.body.user, req.body.org.toLowerCase(), function (err, result) {
 			if (err) {
 				next(err);
 			} else {
@@ -288,7 +288,7 @@ var sendRefreshToken = function (req, res, next) {
 		next();
 	} else {
 		var date = new Date();
-		date.setSeconds(date.getSeconds() + 86400);
+		date.setSeconds(date.getSeconds() + 604800);
 		oauth2.generateToken('refreshToken', req, function (err, id) {
 			oauth2.saveRefreshToken(id, req.oauth.clientId, date, req.oauth.user, function (err) {
 				if (err) {

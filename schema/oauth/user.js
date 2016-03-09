@@ -48,11 +48,7 @@ module.exports = function (connection) {
 			if (err) {
 				next(err);
 			} else if (result) {
-				if (result.id !== self.id) {
-					next(new Error('this user is exists'));
-				} else {
-					next();
-				}
+				next(new Error('this user is exists'));
 			} else {
 				next();
 			}

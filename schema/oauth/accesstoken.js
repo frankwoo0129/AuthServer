@@ -37,7 +37,13 @@ module.exports = function (connection) {
 			} else if (!result) {
 				response(true);
 			} else {
-				response(false);
+				result.remove(function (err){
+					if (err) {
+						response(false);
+					} else {
+						response(true);
+					}
+				});
 			}
 		});
 	}, 'Validation of {id} failed');
