@@ -39,13 +39,10 @@ root.get('/account/profile', token.getToken, function (req, res, next) {
             connection = mongoose.createConnection('mongodb://localhost:27017/' + req.accessToken.user.org),
             User = new UserSchema(connection);
         if (typeof req.query.user === 'string') {
-            var ret = [];
             User.getUserConfigure(req.query.user, function (err, result) {
                 if (err) {
                     next(err);
                 } else {
-                    //ret.push(result);
-                    //res.json(ret);
                     res.json(result);
                 }
                 connection.close();

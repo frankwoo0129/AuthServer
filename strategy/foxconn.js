@@ -2,6 +2,7 @@
 /*jslint nomen: true */
 /*jslint es5: true */
 "use strict";
+
 var http = require('http');
 var querystring = require('querystring');
 var parser = require('xml-parser');
