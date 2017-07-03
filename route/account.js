@@ -5,206 +5,177 @@
 
 var async = require('async');
 var root = require('express').Router();
-var User = require('../schema/user');
-var checkClient = require('./token').checkClient;
+var User = require('../schema/oauth').User;
 
-root.get('/profile', function (req, res, next) {
-	var ret = {};
-	if (req.query.org) {
-		if (typeof req.query.user === 'string') {
-			User.getUserId(req.query.user, req.query.org, function (err, result) {
-				if (err) {
-					next(err);
-				} else {
-					var userId = result.id;
-					User.getUserConfigure(userId, function (err, result) {
-						if (err) {
-							next(err);
-						} else {
-							res.json(result);
-						}
-					});
-				}
-			});
-		} else if (typeof req.query.user === 'object') {
-			async.map(req.query.user, User.getUserIdByOrg(req.query.org), function (err, userIds) {
-				if (err) {
-					next(err);
-				} else {
-					async.map(userIds, User.getUserConfigure, function (err, results) {
-						if (err) {
-							next(err);
-						} else {
-							res.json(results);
-						}
-					});
-				}
-			});
-		} else {
-			next({
-				message: 'no user',
-				status: 400
-			});
-		}
-	} else if (typeof req.query.userId === 'string') {
-		User.getUserConfigure(req.query.userId, function (err, result) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(result);
-			}
-		});
-	} else if (typeof req.query.userId === 'object') {
-		async.map(req.query.userId, User.getUserConfigure, function (err, results) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(results);
-			}
-		});
-	} else {
-		next({
-			message: 'no userId',
-			status: 400
-		});
-	}
+/**
+ * @apiDefine ReturnUserInfo
+ * @apiSuccess {String} id
+ * @apiSuccess {String} user
+ * @apiSuccess {String} org
+ */
+
+/**
+ * @api {get} /account Get User ID
+ * @apiName getUserId
+ * @apiGroup Account
+ *
+ * @apiParam {String} user
+ * @apiParam {String} org
+ *
+ * @apiUse ReturnUserInfo
+ */
+root.get('/account', function (req, res, next) {
+    if (!req.query.user) {
+        next({
+            message: 'no user',
+            status: 400
+        });
+    } else if (!req.query.org) {
+        next({
+            message: 'no org',
+            status: 400
+        });
+    } else {
+        User.getUserId(req.query.user, req.query.org, function (err, user) {
+            if (err) {
+                next(err);
+            } else {
+                res.json(user);
+            }
+        });
+    }
 });
 
-root.post('/profile', function (req, res, next) {
-	if (!req.body.userId) {
-		next({
-			debug: 'no userId',
-			message: 'invalid_request',
-			status: 400
-		});
-	} else {
-		var config = {};
-		config.email = req.body.email;
-		config.mobile_phone = req.body.mobile_phone;
-		config.work_phone = req.body.work_phone;
-		User.setUserConfigure(req.body.userId, config, function (err, result) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(result);
-			}
-		});
-	}
+/**
+ * @api {get} /account/:userId Get User
+ * @apiName getUser
+ * @apiGroup Account
+ *
+ * @apiParam {String} userId
+ *
+ * @apiUse ReturnUserInfo
+ */
+root.get('/account/:userId', function (req, res, next) {
+    User.getUser(req.params.userId, function (err, user) {
+        if (err) {
+            next(err);
+        } else {
+            res.json(user);
+        }
+    });
 });
 
-root.get('/', function (req, res, next) {
-	if (!req.query.user) {
-		next({
-			message: 'no user',
-			status: 400
-		});
-	} else if (!req.query.org) {
-		next({
-			message: 'no org',
-			status: 400
-		});
-	} else {
-		User.getUserId(req.query.user, req.query.org, function (err, user) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(user);
-			}
-		});
-	}
+/**
+ * @api {post} /account New User
+ * @apiName addUser
+ * @apiGroup Account
+ *
+ * @apiParam {String} user
+ * @apiParam {String} org
+ *
+ * @apiUse ReturnUserInfo
+ * @apiSuccess {String} password default password
+ */
+root.post('/account', function (req, res, next) {
+    if (!req.body.user) {
+        next({
+            message: 'no user',
+            status: 400
+        });
+    } else if (!req.body.org) {
+        next({
+            message: 'no org',
+            status: 400
+        });
+    } else {
+        User.addUser(req.body.user, req.body.org, function (err, user) {
+            if (err) {
+                next(err);
+            } else {
+                res.json(user);
+            }
+        });
+    }
 });
 
-root.get('/:userId', function (req, res, next) {
-	User.getUser(req.params.userId, function (err, user) {
-		if (err) {
-			next(err);
-		} else {
-			res.json(user);
-		}
-	});
+/**
+ * @api {post} /account/resetpassword Reset Password
+ * @apiName resetPassword
+ * @apiGroup Account
+ *
+ * @apiParam {String} userId
+ *
+ * @apiSuccess {String} id
+ * @apiSuccess {String} password
+ */
+root.post('/account/resetpassword', function (req, res, next) {
+    if (!req.body.userId) {
+        next({
+            message: 'no userId',
+            status: 400
+        });
+    } else {
+        User.resetPassword(req.body.userId, function (err, result) {
+            if (err) {
+                next(err);
+            } else {
+                res.json(result);
+            }
+        });
+    }
 });
 
-root.post('/', function (req, res, next) {
-	if (!req.body.user) {
-		next({
-			message: 'no user',
-			status: 400
-		});
-	} else if (!req.body.org) {
-		next({
-			message: 'no org',
-			status: 400
-		});
-	} else {
-		User.addUser(req.body.user, req.body.org, null, function (err, user) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(user);
-			}
-		});
-	}
+/**
+ * @api {post} /account/changepassword Change Password
+ * @apiName changePassword
+ * @apiGroup Account
+ *
+ * @apiParam {String} userId
+ * @apiParam {String} password
+ * @apiParam {String} newpassword
+ */
+root.post('/account/changepassword', function (req, res, next) {
+    if (!req.body.userId) {
+        next({
+            message: 'no userId',
+            status: 400
+        });
+    } else if (!req.body.password) {
+        next({
+            message: 'no password',
+            status: 400
+        });
+    } else if (!req.body.newpassword) {
+        next({
+            message: 'no newpassword',
+            status: 400
+        });
+    } else {
+        User.changePassword(req.body.userId, req.body.password, req.body.newpassword, function (err, result) {
+            if (err) {
+                next(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
+    }
 });
 
-root.delete('/', function (req, res, next) {
-	if (!req.body.userId) {
-		next({
-			message: 'no userId',
-			status: 400
-		});
-	} else {
-		User.deleteUser(req.body.userId, function (err, user) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(user);
-			}
-		});
-	}
-});
-
-root.post('/resetpassword', function (req, res, next) {
-	if (!req.body.userId) {
-		next({
-			message: 'no userId',
-			status: 400
-		});
-	} else {
-		User.resetPassword(req.body.userId, function (err, result) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(result);
-			}
-		});
-	}
-});
-
-root.post('/changepassword', function (req, res, next) {
-	if (!req.body.userId) {
-		next({
-			message: 'no userId',
-			status: 400
-		});
-	} else if (!req.body.password) {
-		next({
-			message: 'no password',
-			status: 400
-		});
-	} else if (!req.body.newpassword) {
-		next({
-			message: 'no newpassword',
-			status: 400
-		});
-	} else {
-		User.changePassword(req.body.userId, req.body.password, req.body.newpassword, function (err, result) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(result);
-			}
-		});
-	}
+/**
+ * @api {delete} /account/:userId Delete User
+ * @apiName deleteUser
+ * @apiGroup Account
+ *
+ * @apiParam {String} userId
+ */
+root.delete('/account/:userId', function (req, res, next) {
+    User.deleteUser(req.params.userId, function (err, user) {
+        if (err) {
+            next(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
 });
 
 module.exports = root;
