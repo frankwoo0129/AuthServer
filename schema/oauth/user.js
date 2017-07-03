@@ -15,6 +15,7 @@ var UserSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+	username: String,
 	password: {
 		type: String,
 		required: true
@@ -122,6 +123,11 @@ module.exports = function (connection) {
 			} else {
 				var User = connection.model('User'),
 					newUser = new User();
+				if (org === 'foxconn') {
+					newUser.strategy = org;
+				}
+
+				newUser.username = user;
 				newUser.user = user;
 				newUser.org = org;
 				newUser.id = id;
@@ -133,6 +139,7 @@ module.exports = function (connection) {
 						callback(null, {
 							id: newUser.id,
 							user: newUser.user,
+							username: newUser.username,
 							org: newUser.org,
 							password: newUser.password
 						});
