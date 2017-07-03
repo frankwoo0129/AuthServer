@@ -28,45 +28,45 @@ var token = require('./token');
  * @apiUse UserProfile
  */
 root.get('/account/profile', token.getToken, function (req, res, next) {
-	if (!req.accessToken) {
-		next({
-			debug: 'no access_token',
-			message: 'invalid_grant',
-			status: 401
-		});
-	} else {
-		var ret = {},
-			connection = mongoose.createConnection('mongodb://localhost:27017/' + req.accessToken.user.org),
-			User = new UserSchema(connection);
-		if (typeof req.query.user === 'string') {
-			var ret = [];
-			User.getUserConfigure(req.query.user, function (err, result) {
-				if (err) {
-					next(err);
-				} else {
-					//ret.push(result);
-					//res.json(ret);
-					res.json(result);
-				}
-				connection.close();
-			});
-		} else if (typeof req.query.user === 'object') {
-			async.map(req.query.user, User.getUserConfigure, function (err, results) {
-				if (err) {
-					next(err);
-				} else {
-					res.json(results);
-				}
-				connection.close();
-			});
-		} else {
-			next({
-				message: 'no user',
-				status: 400
-			});
-			connection.close();
-		}
-	}
+    if (!req.accessToken) {
+        next({
+            debug: 'no access_token',
+            message: 'invalid_grant',
+            status: 401
+        });
+    } else {
+        var ret = {},
+            connection = mongoose.createConnection('mongodb://localhost:27017/' + req.accessToken.user.org),
+            User = new UserSchema(connection);
+        if (typeof req.query.user === 'string') {
+            var ret = [];
+            User.getUserConfigure(req.query.user, function (err, result) {
+                if (err) {
+                    next(err);
+                } else {
+                    //ret.push(result);
+                    //res.json(ret);
+                    res.json(result);
+                }
+                connection.close();
+            });
+        } else if (typeof req.query.user === 'object') {
+            async.map(req.query.user, User.getUserConfigure, function (err, results) {
+                if (err) {
+                    next(err);
+                } else {
+                    res.json(results);
+                }
+                connection.close();
+            });
+        } else {
+            next({
+                message: 'no user',
+                status: 400
+            });
+            connection.close();
+        }
+    }
 });
 
 /**
@@ -82,28 +82,28 @@ root.get('/account/profile', token.getToken, function (req, res, next) {
  * @apiUse UserProfile
  */
 root.post('/account/profile', token.getToken, function (req, res, next) {
-	if (!req.accessToken) {
-		next({
-			debug: 'no access_token',
-			message: 'invalid_grant',
-			status: 401
-		});
-	} else {
-		var config = {},
-			connection = mongoose.createConnection('mongodb://localhost:27017/' + req.accessToken.user.org),
-			User = new UserSchema(connection);
-		config.email = req.body.email;
-		config.mobile_phone = req.body.mobile_phone;
-		config.work_phone = req.body.work_phone;
-		User.setUserConfigure(req.accessToken.user.user, config, function (err, result) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(result);
-			}
-			connection.close();
-		});
-	}
+    if (!req.accessToken) {
+        next({
+            debug: 'no access_token',
+            message: 'invalid_grant',
+            status: 401
+        });
+    } else {
+        var config = {},
+            connection = mongoose.createConnection('mongodb://localhost:27017/' + req.accessToken.user.org),
+            User = new UserSchema(connection);
+        config.email = req.body.email;
+        config.mobile_phone = req.body.mobile_phone;
+        config.work_phone = req.body.work_phone;
+        User.setUserConfigure(req.accessToken.user.user, config, function (err, result) {
+            if (err) {
+                next(err);
+            } else {
+                res.json(result);
+            }
+            connection.close();
+        });
+    }
 });
 
 module.exports = root;

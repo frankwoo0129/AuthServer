@@ -31,13 +31,13 @@ var Client = require('../schema/oauth').Client;
  *
  */
 root.get('/client', function (req, res, next) {
-	Client.getAllClient(function (err, results) {
-		if (err) {
-			next(err);
-		} else {
-			res.json(results);
-		}
-	});
+    Client.getAllClient(function (err, results) {
+        if (err) {
+            next(err);
+        } else {
+            res.json(results);
+        }
+    });
 });
 
 /**
@@ -59,13 +59,13 @@ root.get('/client', function (req, res, next) {
  *     }
  */
 root.get('/client/:clientId', function (req, res, next) {
-	Client.getClient(req.params.clientId, function (err, client) {
-		if (err) {
-			next(err);
-		} else {
-			res.json(client);
-		}
-	});
+    Client.getClient(req.params.clientId, function (err, client) {
+        if (err) {
+            next(err);
+        } else {
+            res.json(client);
+        }
+    });
 });
 
 /**
@@ -82,35 +82,35 @@ root.get('/client/:clientId', function (req, res, next) {
  * @apiSuccess {String} [clientSecret] Client Secret.
  */
 root.post('/client', function (req, res, next) {
-	if (!req.body.name) {
-		return next({
-			message: 'No name',
-			status: 400
-		});
-	} else if (!req.body.type) {
-		return next({
-			message: 'No type',
-			status: 400
-		});
-	} else if (!req.body.os) {
-		return next({
-			message: 'No os',
-			status: 400
-		});
-	} else if (!req.body.version) {
-		return next({
-			message: 'No version',
-			status: 400
-		});
-	} else {
-		Client.addClient(req.body.name, req.body.type, req.body.os, req.body.version, function (err, client) {
-			if (err) {
-				next(err);
-			} else {
-				res.json(client);
-			}
-		});
-	}
+    if (!req.body.name) {
+        return next({
+            message: 'No name',
+            status: 400
+        });
+    } else if (!req.body.type) {
+        return next({
+            message: 'No type',
+            status: 400
+        });
+    } else if (!req.body.os) {
+        return next({
+            message: 'No os',
+            status: 400
+        });
+    } else if (!req.body.version) {
+        return next({
+            message: 'No version',
+            status: 400
+        });
+    } else {
+        Client.addClient(req.body.name, req.body.type, req.body.os, req.body.version, function (err, client) {
+            if (err) {
+                next(err);
+            } else {
+                res.json(client);
+            }
+        });
+    }
 });
 
 /**
@@ -121,13 +121,13 @@ root.post('/client', function (req, res, next) {
  * @apiParam {String} clientId
  */
 root.delete('/client/:clientId', function (req, res, next) {
-	Client.deleteClient(req.params.clientId, function (err, client) {
-		if (err) {
-			next(err);
-		} else {
-			res.sendStatus(200);
-		}
-	});
+    Client.deleteClient(req.params.clientId, function (err, client) {
+        if (err) {
+            next(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
 });
 
 module.exports = root;

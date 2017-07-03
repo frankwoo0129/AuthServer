@@ -32,38 +32,38 @@ var profile = require('./profile');
  * @apiUse ReturnUserInfo
  */
 root.get('/oauth/token/:accessToken', token.checkClient, function (req, res, next) {
-	if (req.oauth) {
-		oauth2.getAccessToken(req.params.accessToken, function (err, accessToken) {
-			if (err) {
-				next(err);
-			} else if (!accessToken) {
-				next({
-					debug: 'no this token',
-					message: 'invalid_token',
-					status: 401
-				});
-			} else {
-				var expire = (accessToken.expires.getTime() - new Date().getTime()) / 1000;
-				if (expire < 0) {
-					next({
-						debug: 'token expired',
-						message: 'invalid_token',
-						status: 401
-					});
-				} else {
-					res.status(200).json({
-						user: accessToken.user,
-						expires: expire
-					});
-				}
-			}
-		});
-	} else {
-		return next({
-			message: 'invalid_client',
-			status: 401
-		});
-	}
+    if (req.oauth) {
+        oauth2.getAccessToken(req.params.accessToken, function (err, accessToken) {
+            if (err) {
+                next(err);
+            } else if (!accessToken) {
+                next({
+                    debug: 'no this token',
+                    message: 'invalid_token',
+                    status: 401
+                });
+            } else {
+                var expire = (accessToken.expires.getTime() - new Date().getTime()) / 1000;
+                if (expire < 0) {
+                    next({
+                        debug: 'token expired',
+                        message: 'invalid_token',
+                        status: 401
+                    });
+                } else {
+                    res.status(200).json({
+                        user: accessToken.user,
+                        expires: expire
+                    });
+                }
+            }
+        });
+    } else {
+        return next({
+            message: 'invalid_client',
+            status: 401
+        });
+    }
 });
 
 /**
