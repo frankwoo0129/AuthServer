@@ -20,7 +20,7 @@ var RefreshTokenSchema = new mongoose.Schema({
 	createdAt: {
 		type: Date,
 		default: Date.now,
-		expires: 60 * 60 * 24 * 7
+		expires: 60 * 60 * 24 * 30
 	},
 	expires: {
 		type: Date
@@ -40,6 +40,6 @@ module.exports = function (connection) {
 		});
 	}, 'Validation of {id} failed');
 
-	var RefreshToken = connection.model('RefreshToken', RefreshTokenSchema);
+	var RefreshToken = connection.model('RefreshToken', RefreshTokenSchema, 'refreshtoken');
 	return RefreshToken;
 };

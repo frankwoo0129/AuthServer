@@ -20,7 +20,7 @@ var AccessTokenSchema = new mongoose.Schema({
 	createdAt: {
 		type: Date,
 		default: Date.now,
-		expires: 60 * 60 * 24
+		expires: 60 * 60 * 24 * 30
 	},
 	expires: {
 		type: Date
@@ -37,7 +37,7 @@ module.exports = function (connection) {
 			} else if (!result) {
 				response(true);
 			} else {
-				result.remove(function (err){
+				result.remove(function (err) {
 					if (err) {
 						response(false);
 					} else {
@@ -48,6 +48,6 @@ module.exports = function (connection) {
 		});
 	}, 'Validation of {id} failed');
 
-	var AccessToken = connection.model('AccessToken', AccessTokenSchema);
+	var AccessToken = connection.model('AccessToken', AccessTokenSchema, 'accesstoken');
 	return AccessToken;
 };
